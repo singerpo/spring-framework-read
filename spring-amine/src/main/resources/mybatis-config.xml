@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+		PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC"/>
+			<dataSource type="POOLED">
+				<property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+				<property name="url" value="jdbc:mysql://120.78.170.201:3306/huadou?useAffectedRows=true&amp;useUnicode=true&amp;allowMultiQueries=true&amp;useSSL=false&amp;zeroDateTimeBehavior=convertToNull&amp;serverTimeZone=Asia/Shanghai"/>
+				<property name="username" value="root"/>
+				<property name="password" value="testHado12!%%"/>
+			</dataSource>
+		</environment>
+	</environments>
+</configuration>

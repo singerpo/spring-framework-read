@@ -252,7 +252,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		String beanName = transformedBeanName(name);
 		Object beanInstance;
 
+
 		// Eagerly check singleton cache for manually registered singletons.
+		//先从一级单例池获取，若没有且当前bean正在创建则从二级缓存获取（没有则从三级缓存获取
+		// ，再放入二级缓存）
+		//所以bean第一次创建此处必为空
 		Object sharedInstance = getSingleton(beanName);
 		if (sharedInstance != null && args == null) {
 			if (logger.isTraceEnabled()) {
@@ -329,7 +333,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 
 				// Create bean instance.
+				//创建bean实例
 				if (mbd.isSingleton()) {
+					//创建bean之前当前beanName放入set集合用来标识正在创建中
+					//实例化，判断正在创建中，放入三级缓存（为提前aop做准备),属性填充，初始化，aop,二级缓存中取
+					//创建bean之后从set集合移除当前beanName
+					//放入单例池
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
 							return createBean(beanName, mbd, args);

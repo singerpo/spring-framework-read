@@ -190,6 +190,9 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 		return count;
 	}
 
+	/**
+	 *  重载方法之一，调用了下面的 loadBeanDefinitions(String,Set<Resource>)方法
+	 */
 	@Override
 	public int loadBeanDefinitions(String location) throws BeanDefinitionStoreException {
 		return loadBeanDefinitions(location, null);
@@ -209,8 +212,10 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 	 * @see #getResourceLoader()
 	 * @see #loadBeanDefinitions(org.springframework.core.io.Resource)
 	 * @see #loadBeanDefinitions(org.springframework.core.io.Resource[])
+	 * 获取在 IoC 容器初始化过程中设置的资源加载器
 	 */
 	public int loadBeanDefinitions(String location, @Nullable Set<Resource> actualResources) throws BeanDefinitionStoreException {
+		// 在实例化 XmlBeanDefinitionReader 时 曾将 IoC容器注入该对象，作为 resourceLoader 属性
 		ResourceLoader resourceLoader = getResourceLoader();
 		if (resourceLoader == null) {
 			throw new BeanDefinitionStoreException(
@@ -220,7 +225,11 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 		if (resourceLoader instanceof ResourcePatternResolver) {
 			// Resource pattern matching available.
 			try {
+				// 将指定位置的BeanDefinition 资源文件解析为IoC 容器封装的资源
+				// 这里的getResources 从FileSystemXmlApplicationContext的继承体系可以明确，其走的是
+				// DefaultResourceLoader中的实现
 				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
+				// 委派调用其子类 XmlBeanDefinitionReader 的方法，实现加载功能
 				int count = loadBeanDefinitions(resources);
 				if (actualResources != null) {
 					Collections.addAll(actualResources, resources);
@@ -236,8 +245,17 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 			}
 		}
 		else {
+			/**
+			 * AbstractApplicationContext 继承了 DefaultResourceLoader,所以 AbstractApplicationContext
+			 * 及其子类都会调用 DefaultResourceLoader 中的实现，将指定位置的资源文件解析为Resource,
+			 * 至此完成了对BeanDefinition 的资源定位。
+			 */
 			// Can only load single resources by absolute URL.
 			Resource resource = resourceLoader.getResource(location);
+			// 从 resource 中加载 BeanDefinition,loadCount 为加载 BeanDefiniton 个数
+			// 该 loadBeanDefinitions() 方法来自其实现的BeanDefinitionReader 接口，
+			// 且本类是一个抽象类，并未对该方法进行实现。而是交由子类进行实现，如果是用xml文件进行
+			// IoC 容器的初始化，则调用 XmlBeanDefinitonReader 中的实现
 			int count = loadBeanDefinitions(resource);
 			if (actualResources != null) {
 				actualResources.add(resource);
@@ -249,9 +267,13 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 		}
 	}
 
+	/**
+	 *loadBeanDefinitions()方法的重载方法之一，调用了另一个重载方法 loadBeanDefinitions(String)
+	 */
 	@Override
 	public int loadBeanDefinitions(String... locations) throws BeanDefinitionStoreException {
 		Assert.notNull(locations, "Location array must not be null");
+		// 计数器，统计加载了多个BeanDefinition
 		int count = 0;
 		for (String location : locations) {
 			count += loadBeanDefinitions(location);

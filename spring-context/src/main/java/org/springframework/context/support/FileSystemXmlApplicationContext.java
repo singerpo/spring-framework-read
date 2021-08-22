@@ -81,6 +81,7 @@ public class FileSystemXmlApplicationContext extends AbstractXmlApplicationConte
 	 * @param configLocation file path
 	 * @throws BeansException if context creation failed
 	 */
+	// configLocation包含了BeanDefinition所在的文件路径
 	public FileSystemXmlApplicationContext(String configLocation) throws BeansException {
 		this(new String[] {configLocation}, true, null);
 	}
@@ -91,6 +92,7 @@ public class FileSystemXmlApplicationContext extends AbstractXmlApplicationConte
 	 * @param configLocations array of file paths
 	 * @throws BeansException if context creation failed
 	 */
+	// 可以定义多个BeanDefinition所在的文件路径
 	public FileSystemXmlApplicationContext(String... configLocations) throws BeansException {
 		this(configLocations, true, null);
 	}
@@ -103,6 +105,7 @@ public class FileSystemXmlApplicationContext extends AbstractXmlApplicationConte
 	 * @param parent the parent context
 	 * @throws BeansException if context creation failed
 	 */
+	// 在定义多个 BeanDefinition 所在的文件路径的同时，还能指定自己的双亲 IoC容器
 	public FileSystemXmlApplicationContext(String[] configLocations, ApplicationContext parent) throws BeansException {
 		this(configLocations, true, parent);
 	}
@@ -132,13 +135,16 @@ public class FileSystemXmlApplicationContext extends AbstractXmlApplicationConte
 	 * @throws BeansException if context creation failed
 	 * @see #refresh()
 	 */
+	// 如果应用直接使用 FileSystemXmlApplicationContext 进行实例化，则都会进到这个构造方法中来
 	public FileSystemXmlApplicationContext(
 			String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
 			throws BeansException {
-
+		// 动态的确定用哪个加载器去加载我们的配置文件
 		super(parent);
+		// 告诉读取器配置文件放在哪里，该方法继承于爷类AbstractRefreshConfigApplicationContext
 		setConfigLocations(configLocations);
 		if (refresh) {
+			// 容器初始化
 			refresh();
 		}
 	}
@@ -152,6 +158,7 @@ public class FileSystemXmlApplicationContext extends AbstractXmlApplicationConte
 	 * @param path the path to the resource
 	 * @return the Resource handle
 	 * @see org.springframework.web.context.support.XmlWebApplicationContext#getResourceByPath
+	 * 实例化一个 FileSystemResource并返回，以便后续对资源的IO操作
 	 */
 	@Override
 	protected Resource getResourceByPath(String path) {

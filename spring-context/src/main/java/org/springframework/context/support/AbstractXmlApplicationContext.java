@@ -76,21 +76,34 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 	 * @see org.springframework.beans.factory.xml.XmlBeanDefinitionReader
 	 * @see #initBeanDefinitionReader
 	 * @see #loadBeanDefinitions
+	 * 实现了基类 AbstactRefreshableApplicationContext的抽象方法
 	 */
 	@Override
 	protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws BeansException, IOException {
 		// Create a new XmlBeanDefinitionReader for the given BeanFactory.
+		/** DefaultListableBeanFactory 实现了 BeanDefinitionRegistry 接口，在初始化 XmlBeanDefinitionReader 时
+		 * 将 BeanDefinition 注册器注入该 BeanDefinition 读取器
+		 * 创建用于从 Xml 中读取 BeanDefinition 的读取器，并通过回调设置到 IoC 容器中去,容器使用该读取器读取 BeanDefinition 资源
+		 */
 		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
 
 		// Configure the bean definition reader with this context's
 		// resource loading environment.
 		beanDefinitionReader.setEnvironment(this.getEnvironment());
+		// 为 BeanDefinition 读取器设置资源加载器，由于本来的基类 AbstractApplicationContext
+		// 继承了 DefaultResourceLoader,因此，本容器自身也是一个资源加载器
 		beanDefinitionReader.setResourceLoader(this);
+		// 设置 SAX解析器，SAX（simple API for XML)是另一种 XML 解析方法。相比DOM,SAX速度更快，占用内存更小。
+		// 它逐行扫描文档，一边扫描一边解析。相比于先将整理XML文件扫描进内存，再进行解析的DOM,SAX可以在解析文档的
+		// 的任意时刻停止解析，但操作也比DOM复杂.
 		beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
 
 		// Allow a subclass to provide custom initialization of the reader,
 		// then proceed with actually loading the bean definitions.
+		// 初始化 BeanDefiniton 读取器，该方法同时启用了XML的校验机制
 		initBeanDefinitionReader(beanDefinitionReader);
+		// BeanDefinition读取器真正实现加载的方法
+		// 用传进来的 XmlBeanDefinitionReader 读取器读取 .xml 文件中配置的bean
 		loadBeanDefinitions(beanDefinitionReader);
 	}
 
@@ -117,14 +130,27 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 	 * @see #getConfigLocations
 	 * @see #getResources
 	 * @see #getResourcePatternResolver
+	 *  用传进来的XmlBeanDefinitionReader 读取器加载 xml 文件中的BeanDefiniton
 	 */
 	protected void loadBeanDefinitions(XmlBeanDefinitionReader reader) throws BeansException, IOException {
+		/**
+		 * ClassPathXmlApplicationContext 与 FileSystemXmlApplicationContext 在这里的调用出现分歧
+		 * 各自按不同的方式加载解析Resource资源，最后在具体的解析和BeanDefinition定位上又会殊途同归。
+		 */
+
+		// 获取存放了BeanDefintion 的所有 Resource,FileSystemXmlApplicationContext 类未对
+		// getConfigResources()进行重写，所以调用父类的，return null。
+		// 而ClassPathXmlApplicationContext 对该方法进行了重写，返回设置的值
 		Resource[] configResources = getConfigResources();
 		if (configResources != null) {
+			// XmlBeanDefinitionReader 调用其父类 AbstractBeanDefinitionReader的方法加载 BeanDefintion
 			reader.loadBeanDefinitions(configResources);
 		}
+		// 调用父类 AbstractRefreshableConfigApplicationContext 的实现，
+		// 优先返回 FileSystemXmlApplicationContext 构造方法中调用 setConfiglocations()方法设置的资源
 		String[] configLocations = getConfigLocations();
 		if (configLocations != null) {
+			// XmlBeanDefinitionReader 调用其父类 AbstractBeanDefinitionReader 的方法从配置位置加载 BeanDefinition
 			reader.loadBeanDefinitions(configLocations);
 		}
 	}

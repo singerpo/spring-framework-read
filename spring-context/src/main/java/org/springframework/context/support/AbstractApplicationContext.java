@@ -541,48 +541,89 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		return this.applicationListeners;
 	}
 
+	/**
+	 * 容器初始化的过程：BeanDefinition的Resource定位、BeanDefinition的载入、BeanDefinition的注册。
+	 * BeanDefinition 的载入和 bean 的依赖注入是两个独立的过程，依赖注入一般发生在应用第一次通过getBean()方法从容器获取bean时。
+	 *
+	 * 另外需要注意的是，IoC容器有一个预实例化的配置（即将AbstractBeanDefinition的layzyInit属性设为false),使用户可以对容器的初始化
+	 *  做一个微小的调控，lazyInit设置为false的bean将在容器初始化时进行依赖注入，而不会等到getBean()方法调用时才进行
+	 */
 	@Override
 	public void refresh() throws BeansException, IllegalStateException {
 		synchronized (this.startupShutdownMonitor) {
 			StartupStep contextRefresh = this.applicationStartup.start("spring.context.refresh");
 
 			// Prepare this context for refreshing.
+			//调用容器准备刷新，获取容器的当前时间，同时给容器设置同步标识
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
+			/**
+			 * 返回beanFactory
+			 * 1.spring自身的bean
+			 * 	@see org.springframework.context.annotation.ConfigurationClassPostProcessor
+			 * 	@see org.springframework.context.event.DefaultEventListenerFactory
+			 * 	@see org.springframework.context.event.EventListenerMethodProcessor
+			 * 	@see org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor
+			 * 	@see org.springframework.context.annotation.CommonAnnotationBeanPostProcessor
+			 * 2.sping配置文件中配置的bean spirng.xml
+			 * 3.register(annotatedClasses)注册的bean,比如传入的appConfig
+			 */
+			// 告诉子类启动refreshBeanFactory()方法，BeanDefinition资源文件的载入从子类的refreshBeanFactory方法启动开始
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
+			/**
+			 * 准备bean工厂
+			 * 为beanFactory准备后置处理器 ApplicationContextAwareProccessor、ApplicationListenerDetector
+			 * 用于监听容器触发的事件
+ 			 */
 			prepareBeanFactory(beanFactory);
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
+				// 为容器的某些子类指定特殊的BeanPost事件处理器(暂时为空方法）
 				postProcessBeanFactory(beanFactory);
 
 				StartupStep beanPostProcess = this.applicationStartup.start("spring.context.beans.post-process");
 				// Invoke factory processors registered as beans in the context.
+				/**
+				 * 完成扫描将类解析为GenericBeanDefinition,放入到map里面
+				 *调用所有注册的BeanFactoryPostProcessor的Bean
+				 * @see org.springframework.context.annotation.ConfigurationClassPostProcessor
+				 */
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
+				/**
+				 * 为BeanFactory注册BeanPostProcessor事件处理器
+				 *  BeanPostProcessor是Bean后置处理器，用户监听容器触发的事件
+				 */
 				registerBeanPostProcessors(beanFactory);
 				beanPostProcess.end();
 
 				// Initialize message source for this context.
+				// 初始化信息源，和国际化相关
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
+				// 初始化容器事件传播器
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
+				//调用子类的某些特殊 Bean 初始化方法（暂时空方法）
 				onRefresh();
 
 				// Check for listener beans and register them.
+				//为事件传播器注册事件监听器
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
+				//实例化所有单例bean
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
+				// 初始化容器的生命周期事件处理器，并发布容器的生命周期事件
 				finishRefresh();
 			}
 
@@ -593,9 +634,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				}
 
 				// Destroy already created singletons to avoid dangling resources.
+				// 销毁已创建的单例 Bean
 				destroyBeans();
 
 				// Reset 'active' flag.
+				// 取消refresh操作，重置容器的同步标识
 				cancelRefresh(ex);
 
 				// Propagate exception to caller.
@@ -667,8 +710,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #refreshBeanFactory()
 	 * @see #getBeanFactory()
 	 */
+	//告诉子类去刷新内部的beanFactory
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
+		//自己定义了抽象的refreshBeanFactory()方法，具体实现交给了子类
 		refreshBeanFactory();
+		// getBeanFactory()也是一个抽象方法，交由子类实现
+		//看到这里是不是容易想起“模板方法模式”，父类在模板方法定义好流程，定义好抽象方法
+		//具体实现交由子类完成
 		return getBeanFactory();
 	}
 
@@ -915,6 +963,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.freezeConfiguration();
 
 		// Instantiate all remaining (non-lazy-init) singletons.
+		//实例化所有单列bean核心方法
 		beanFactory.preInstantiateSingletons();
 	}
 
