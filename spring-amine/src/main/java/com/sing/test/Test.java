@@ -15,7 +15,7 @@ import java.nio.file.Files;
 public class Test {
 
 	public static void main(String[] args) {
-		FileSystemXmlApplicationContext applicationContext = new FileSystemXmlApplicationContext("F:\\sourceCode\\spring-framework\\spring-amine\\src\\main\\resources\\spring.xml");
+		FileSystemXmlApplicationContext applicationContext = new FileSystemXmlApplicationContext("E:\\spring-framework-read\\spring-amine\\src\\main\\resources\\spring.xml");
 		IndexService indexService = applicationContext.getBean(IndexService.class);
 		System.out.println(indexService);
 		indexService.test();
