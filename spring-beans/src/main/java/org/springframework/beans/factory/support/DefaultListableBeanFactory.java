@@ -161,6 +161,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	private final Map<Class<?>, Object> resolvableDependencies = new ConcurrentHashMap<>(16);
 
 	/** Map of bean definition objects, keyed by bean name. */
+	// IoC容器的实际体现，key--> beanName,value--> BeanDefinition对象
 	private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
 
 	/** Map from bean name to merged BeanDefinitionHolder. */
@@ -173,6 +174,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	private final Map<Class<?>, String[]> singletonBeanNamesByType = new ConcurrentHashMap<>(64);
 
 	/** List of bean definition names, in registration order. */
+	// 按注册顺序排列的 beanDefinition名称列表（即 beanName)
 	private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
 
 	/** List of names of manually registered singletons, in registration order. */
@@ -977,6 +979,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	// Implementation of BeanDefinitionRegistry interface
 	//---------------------------------------------------------------------
 
+	/**
+	 * 向IoC容器注册解析的 beanName 和 BeanDifinition 对象
+	 */
 	@Override
 	public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition)
 			throws BeanDefinitionStoreException {
@@ -984,6 +989,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		Assert.hasText(beanName, "Bean name must not be empty");
 		Assert.notNull(beanDefinition, "BeanDefinition must not be null");
 
+		// 校验解析的 BeanDefinition 对象
 		if (beanDefinition instanceof AbstractBeanDefinition) {
 			try {
 				((AbstractBeanDefinition) beanDefinition).validate();
@@ -994,7 +1000,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 		}
 
+
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
+		// 检查是否有同名（beanName)的BeanDefinition 存在于 IoC 容器中，如果已经存在，且不允许覆盖
+		// 已注册的 BeanDefinition,则抛出注册异常，allowBeanDefinitionOverriding 默认为 true
 		if (existingDefinition != null) {
 			if (!isAllowBeanDefinitionOverriding()) {
 				throw new BeanDefinitionOverrideException(beanName, beanDefinition, existingDefinition);
@@ -1021,8 +1030,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							"] with [" + beanDefinition + "]");
 				}
 			}
+			//如果允许覆盖同名的 bean,后注册的会覆盖先注册的
 			this.beanDefinitionMap.put(beanName, beanDefinition);
 		}
+		// 若该 beanName 在IoC容器尚未注册，将其注册到 IoC 容器中
 		else {
 			if (hasBeanCreationStarted()) {
 				// Cannot modify startup-time collection elements anymore (for stable iteration)
@@ -1045,6 +1056,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 
 		if (existingDefinition != null || containsSingleton(beanName)) {
+			// 重置所有已注册过的 BeanDefiniton缓存
 			resetBeanDefinition(beanName);
 		}
 		else if (isConfigurationFrozen()) {

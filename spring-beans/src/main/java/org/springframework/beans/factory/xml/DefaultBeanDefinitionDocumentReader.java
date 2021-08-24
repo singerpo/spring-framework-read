@@ -344,7 +344,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	/**
 	 * Process the given bean element, parsing the bean definition
 	 * and registering it with the registry.
-	 * 解析 bean 元素
+	 * 解析 bean 元素,并将解析后的BeanDefinition 对象,并注册到 IoC 容器中
 	 */
 	protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
 		// BeanDefinitionHolder 是对 BeanDefinition 的进一步封装，持有一个 BeanDefinition 对象及其对应
@@ -367,7 +367,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 						bdHolder.getBeanName() + "'", ele, ex);
 			}
 			// Send registration event.
-			// 在完成向 Spring IoC 容器
+			// 在完成向 Spring IoC 容器注册 BeanDefinition对象之后，发送注册事件
 			getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
 		}
 	}
