@@ -504,11 +504,17 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see #loadBeanDefinitions
 	 * @see #setDocumentReaderClass
 	 * @see BeanDefinitionDocumentReader#registerBeanDefinitions
+	 * 按照 Spring 对配置文件中bean 元素的语义定义，将bean元素解析成 BeanDefinition 对象
 	 */
 	public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
+		// 得到BeanDefinitionDocumentReader,将 xml 中配置的 bean 解析成 BeanDefinition 对象
+		// BeanDefinitionDocumentReader 只是个接口，这里实际上是一个 DefaultBeanDefinitionDocumentReader 对象
 		BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();
+		// 获得容器中注册的 bean 数量
 		int countBefore = getRegistry().getBeanDefinitionCount();
+		// 解析过程入口
 		documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
+		//统计解析的 bean 数量
 		return getRegistry().getBeanDefinitionCount() - countBefore;
 	}
 
