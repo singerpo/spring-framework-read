@@ -71,7 +71,10 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 	 */
 	private static final int METHOD_REPLACER = 2;
 
-
+	/**
+	 * 下面两个方法都通过实例化自己的私有静态内部类 CglibSubclassCreator,
+	 * 然后调用该内部类对象的实例化方法 instantiate
+	 */
 	@Override
 	protected Object instantiateWithMethodInjection(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner) {
 		return instantiateWithMethodInjection(bd, beanName, owner, null);
@@ -89,6 +92,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 	/**
 	 * An inner class created for historical reasons to avoid external CGLIB dependency
 	 * in Spring versions earlier than 3.2.
+	 * 为了避免 3.2 之前的 Spring 版本中的外部 cglib依赖而创建的内部类
 	 */
 	private static class CglibSubclassCreator {
 
@@ -112,8 +116,10 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 		 * @param args arguments to use for the constructor.
 		 * Ignored if the {@code ctor} parameter is {@code null}.
 		 * @return new instance of the dynamically generated subclass
+		 * 使用 CGLIB 进行 bean 对象实例化
 		 */
 		public Object instantiate(@Nullable Constructor<?> ctor, Object... args) {
+			// 实例化 Enhancer对象，并为 Enhancer对象设置父类，生产 Java 对象的参数，比如：基类、回调方法等
 			Class<?> subclass = createEnhancedSubclass(this.beanDefinition);
 			Object instance;
 			if (ctor == null) {
@@ -144,6 +150,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 		 */
 		private Class<?> createEnhancedSubclass(RootBeanDefinition beanDefinition) {
 			Enhancer enhancer = new Enhancer();
+			// 将 bean 本身作为其父类
 			enhancer.setSuperclass(beanDefinition.getBeanClass());
 			enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
 			if (this.owner instanceof ConfigurableBeanFactory) {
@@ -152,6 +159,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 			}
 			enhancer.setCallbackFilter(new MethodOverrideCallbackFilter(beanDefinition));
 			enhancer.setCallbackTypes(CALLBACK_TYPES);
+			// 使用 CGLIB 的 create()方法生成实例对象
 			return enhancer.createClass();
 		}
 	}

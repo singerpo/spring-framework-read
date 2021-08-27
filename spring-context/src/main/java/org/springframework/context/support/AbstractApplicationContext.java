@@ -542,9 +542,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
-	 * 容器初始化的过程：BeanDefinition的Resource定位、BeanDefinition的载入、BeanDefinition的注册。
-	 * BeanDefinition 的载入和 bean 的依赖注入是两个独立的过程，依赖注入一般发生在应用第一次通过getBean()方法从容器获取bean时。
+	 * 容器初始化的过程：
+	 * 1.根据指定规则扫描指定目录，获取所有用于配置 bean 的配置文件；（BeanDefinition的Resource定位）
+	 * 2.根据 Spring 定义的规则，解析配置文件中各个元素，将其封装成 IoC 容器 可以装载的 BeanDefinition对象；（BeanDefinition的载入）
+	 * 3.将封装好的 BeanDefinition 注册进 IoC 容器。（BeanDefinition的注册）
 	 *
+	 * BeanDefinition 的载入和 bean 的依赖注入是两个独立的过程，依赖注入一般发生在应用第一次通过getBean()方法从容器获取bean时。
 	 * 另外需要注意的是，IoC容器有一个预实例化的配置（即将AbstractBeanDefinition的layzyInit属性设为false),使用户可以对容器的初始化
 	 *  做一个微小的调控，lazyInit设置为false的bean将在容器初始化时进行依赖注入，而不会等到getBean()方法调用时才进行
 	 */
@@ -558,18 +561,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
-			/**
-			 * 返回beanFactory
-			 * 1.spring自身的bean
-			 * 	@see org.springframework.context.annotation.ConfigurationClassPostProcessor
-			 * 	@see org.springframework.context.event.DefaultEventListenerFactory
-			 * 	@see org.springframework.context.event.EventListenerMethodProcessor
-			 * 	@see org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor
-			 * 	@see org.springframework.context.annotation.CommonAnnotationBeanPostProcessor
-			 * 2.sping配置文件中配置的bean spirng.xml
-			 * 3.register(annotatedClasses)注册的bean,比如传入的appConfig
-			 */
-			// 告诉子类启动refreshBeanFactory()方法，BeanDefinition资源文件的载入从子类的refreshBeanFactory方法启动开始
+			// 告诉子类启动 refreshBeanFactory() 方法，BeanDefinition资源文件的载入从子类的
+			// refreshBeanFactory() 方法启动开始
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
@@ -620,6 +613,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 				// Instantiate all remaining (non-lazy-init) singletons.
 				//实例化所有单例bean
+				/**
+				 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				 * 对配置了 lazy-init 属性为 false 的 bean 进行预实例化
+				 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				 */
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
@@ -934,12 +932,20 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	/**
 	 * Finish the initialization of this context's bean factory,
 	 * initializing all remaining singleton beans.
+	 * 对配置了 lazy-init 属性为 false 的 bean 进行预实例化
 	 */
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
 		// Initialize conversion service for this context.
+		// 这是 Spirng3 以后新加的代码，为容器指定一个转换服务（ConversionService)
+		// 在对某些 bean 属性进行转换时使用
 		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&
 				beanFactory.isTypeMatch(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class)) {
 			beanFactory.setConversionService(
+					/**
+					 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					 * 这里通过调用 getBean() 方法，触发依赖注入
+					 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					 */
 					beanFactory.getBean(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class));
 		}
 
@@ -957,13 +963,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Stop using the temporary ClassLoader for type matching.
+		// 为了类型匹配，停止使用临时的类加载器
 		beanFactory.setTempClassLoader(null);
 
 		// Allow for caching all bean definition metadata, not expecting further changes.
+		// 缓存容器中所有注册的 BeanDefinition 元数据，以防被修改
 		beanFactory.freezeConfiguration();
 
 		// Instantiate all remaining (non-lazy-init) singletons.
-		//实例化所有单列bean核心方法
+		//实例化所有单列bean核心方法（对配置了 lazy-init 属性为 false 的单例bean 进行预实例化处理）
 		beanFactory.preInstantiateSingletons();
 	}
 
