@@ -140,6 +140,7 @@ public interface BeanFactory {
 	 * @throws NoSuchBeanDefinitionException if there is no bean with the specified name
 	 * @throws BeansException if the bean could not be obtained
 	 */
+	// 从容器中根据 beanName获取
 	Object getBean(String name) throws BeansException;
 
 	/**
@@ -218,6 +219,7 @@ public interface BeanFactory {
 	 * @return a corresponding provider handle
 	 * @since 5.1
 	 * @see #getBeanProvider(ResolvableType)
+	 * 延迟加载对象
 	 */
 	<T> ObjectProvider<T> getBeanProvider(Class<T> requiredType);
 
@@ -251,6 +253,7 @@ public interface BeanFactory {
 	 * will be able to obtain an instance for the same name.
 	 * @param name the name of the bean to query
 	 * @return whether a bean with the given name is present
+	 * 是否存在beanName
 	 */
 	boolean containsBean(String name);
 
@@ -268,6 +271,7 @@ public interface BeanFactory {
 	 * @throws NoSuchBeanDefinitionException if there is no bean with the given name
 	 * @see #getBean
 	 * @see #isPrototype
+	 * 这个 beanName 是否是单例的，映射成 bean
 	 */
 	boolean isSingleton(String name) throws NoSuchBeanDefinitionException;
 
@@ -286,6 +290,7 @@ public interface BeanFactory {
 	 * @since 2.0.3
 	 * @see #getBean
 	 * @see #isSingleton
+	 * 是否原型
 	 */
 	boolean isPrototype(String name) throws NoSuchBeanDefinitionException;
 
@@ -303,6 +308,7 @@ public interface BeanFactory {
 	 * @since 4.2
 	 * @see #getBean
 	 * @see #getType
+	 * 类型是否匹配
 	 */
 	boolean isTypeMatch(String name, ResolvableType typeToMatch) throws NoSuchBeanDefinitionException;
 
@@ -337,6 +343,7 @@ public interface BeanFactory {
 	 * @since 1.1.2
 	 * @see #getBean
 	 * @see #isTypeMatch
+	 * 获取 bean 的类型
 	 */
 	@Nullable
 	Class<?> getType(String name) throws NoSuchBeanDefinitionException;
@@ -372,6 +379,7 @@ public interface BeanFactory {
 	 * @param name the bean name to check for aliases
 	 * @return the aliases, or an empty array if none
 	 * @see #getBean
+	 * 获取别名
 	 */
 	String[] getAliases(String name);
 

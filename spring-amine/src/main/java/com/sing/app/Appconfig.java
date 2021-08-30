@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @ComponentScan("com.sing")
-@Import(SingImportBeanDefinitionRegistrar.class)
+// @Import(SingImportBeanDefinitionRegistrar.class)
 @EnableAspectJAutoProxy
 @Configuration
 public class Appconfig {

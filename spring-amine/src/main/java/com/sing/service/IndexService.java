@@ -13,8 +13,8 @@ public class IndexService implements InitializingBean {
 	@Autowired
 	@Qualifier("userServiceQ")
 	UserService userService;
-	@Autowired
-	OrderMapper orderMapper;
+	// @Autowired
+	// OrderMapper orderMapper;
 
 	public IndexService(){
 		System.out.println("IndexService Constructor");

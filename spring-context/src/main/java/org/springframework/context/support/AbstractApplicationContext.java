@@ -1190,7 +1190,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * no-op if {@link #getBeanFactory()} itself throws an exception in such a case.
 	 */
 	protected void assertBeanFactoryActive() {
+		// 是否存活
 		if (!this.active.get()) {
+			// 是否关闭
 			if (this.closed.get()) {
 				throw new IllegalStateException(getDisplayName() + " has been closed already");
 			}
@@ -1213,7 +1215,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	@Override
 	public <T> T getBean(String name, Class<T> requiredType) throws BeansException {
+		// 判断 beanFactory 是否存活
 		assertBeanFactoryActive();
+
+		// 1.获取 beanFactory
+		// 2.根据 beanName + class 获取 bean
 		return getBeanFactory().getBean(name, requiredType);
 	}
 
