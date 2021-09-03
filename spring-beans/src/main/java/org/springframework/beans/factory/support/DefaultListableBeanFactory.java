@@ -855,6 +855,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		return resolver.isAutowireCandidate(holder, descriptor);
 	}
 
+	/**
+	 * 获取 beanDefinition
+	 */
 	@Override
 	public BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefinitionException {
 		BeanDefinition bd = this.beanDefinitionMap.get(beanName);

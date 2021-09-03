@@ -299,6 +299,8 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 		if (StringUtils.hasLength(other.getBeanClassName())) {
 			setBeanClassName(other.getBeanClassName());
 		}
+		//  作用域设置
+		// 没有设置作用域直接给单例类型
 		if (StringUtils.hasLength(other.getScope())) {
 			setScope(other.getScope());
 		}
@@ -462,12 +464,15 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 */
 	@Nullable
 	public Class<?> resolveBeanClass(@Nullable ClassLoader classLoader) throws ClassNotFoundException {
+		// 获取 beanClassName
 		String className = getBeanClassName();
 		if (className == null) {
 			return null;
 		}
+		// 加载类
 		Class<?> resolvedClass = ClassUtils.forName(className, classLoader);
 		this.beanClass = resolvedClass;
+		// 返回
 		return resolvedClass;
 	}
 

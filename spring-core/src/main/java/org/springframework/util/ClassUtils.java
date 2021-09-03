@@ -1292,12 +1292,17 @@ public abstract class ClassUtils {
 	 * @see #getMostSpecificMethod
 	 */
 	public static Method getInterfaceMethodIfPossible(Method method) {
+		// 是不是 public
+		// 是不是接口
 		if (!Modifier.isPublic(method.getModifiers()) || method.getDeclaringClass().isInterface()) {
 			return method;
 		}
+
+		// 放入init-method 缓存
 		return interfaceMethodCache.computeIfAbsent(method, key -> {
 			Class<?> current = key.getDeclaringClass();
 			while (current != null && current != Object.class) {
+				// 当前类的接口列表
 				Class<?>[] ifcs = current.getInterfaces();
 				for (Class<?> ifc : ifcs) {
 					try {

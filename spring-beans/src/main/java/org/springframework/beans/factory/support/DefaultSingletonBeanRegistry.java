@@ -159,8 +159,11 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		Assert.notNull(singletonFactory, "Singleton factory must not be null");
 		synchronized (this.singletonObjects) {
 			if (!this.singletonObjects.containsKey(beanName)) {
+				// 添加三级缓存（单例对象工厂）
 				this.singletonFactories.put(beanName, singletonFactory);
+				// (从二级缓存）删除单例beanName
 				this.earlySingletonObjects.remove(beanName);
+				// 注册单例 beanName
 				this.registeredSingletons.add(beanName);
 			}
 		}
@@ -246,6 +249,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					this.suppressedExceptions = new LinkedHashSet<>();
 				}
 				try {
+					// 从 ObjectFactory 中获取
 					singletonObject = singletonFactory.getObject();
 					newSingleton = true;
 				}
@@ -269,10 +273,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					if (recordSuppressedExceptions) {
 						this.suppressedExceptions = null;
 					}
-					//从set集合移除该bean
+					//创建单例对象后，从set集合移除该bean
 					afterSingletonCreation(beanName);
 				}
-				// 放入单例池
+				// 添加到单例池
 				if (newSingleton) {
 					addSingleton(beanName, singletonObject);
 				}
@@ -435,6 +439,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		String canonicalName = canonicalName(beanName);
 
 		synchronized (this.dependentBeanMap) {
+			// 向依赖关系中放入数据
 			Set<String> dependentBeans =
 					this.dependentBeanMap.computeIfAbsent(canonicalName, k -> new LinkedHashSet<>(8));
 			if (!dependentBeans.add(dependentBeanName)) {
@@ -467,6 +472,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 			return false;
 		}
 		String canonicalName = canonicalName(beanName);
+		// 依赖表中获取
 		Set<String> dependentBeans = this.dependentBeanMap.get(canonicalName);
 		if (dependentBeans == null) {
 			return false;

@@ -126,9 +126,11 @@ public class ResourceEditorRegistrar implements PropertyEditorRegistrar {
 	 */
 	private void doRegisterEditor(PropertyEditorRegistry registry, Class<?> requiredType, PropertyEditor editor) {
 		if (registry instanceof PropertyEditorRegistrySupport) {
+			// 属性编辑器覆盖默认的编辑器
 			((PropertyEditorRegistrySupport) registry).overrideDefaultEditor(requiredType, editor);
 		}
 		else {
+			// 注册自定义的属性编辑器
 			registry.registerCustomEditor(requiredType, editor);
 		}
 	}

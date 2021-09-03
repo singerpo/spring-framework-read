@@ -3,6 +3,8 @@ package com.sing.factorybean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 @Component
 public class TestFactoryBean implements FactoryBean<Object> {
 	@Override
@@ -14,4 +16,5 @@ public class TestFactoryBean implements FactoryBean<Object> {
 	public Class<?> getObjectType() {
 		return FactoryObject.class;
 	}
+
 }

@@ -316,6 +316,7 @@ public class PropertyEditorRegistrySupport implements PropertyEditorRegistry {
 			if (this.customEditors == null) {
 				this.customEditors = new LinkedHashMap<>(16);
 			}
+			// 放入 customEditors map 对象中
 			this.customEditors.put(requiredType, propertyEditor);
 			this.customEditorCache = null;
 		}
