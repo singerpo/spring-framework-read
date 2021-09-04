@@ -3,6 +3,7 @@ package com.sing.test;
 import com.mybatis.SingMapperFactoryBean;
 import com.mybatis.mapper.UserMapper;
 import com.sing.app.Appconfig;
+import com.sing.beanFactoryPostProcessor.TestBfp;
 import com.sing.service.IndexService;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -32,6 +33,8 @@ public class Test {
 // 		System.out.println(applicationContext.getBean("&userMapper"));
 		System.out.println(applicationContext.getBean("&testFactoryBean"));
 		System.out.println(applicationContext.getBean("testFactoryBean"));
+// 		TestBfp testBfp = applicationContext.getBean(TestBfp.class);
+// 		testBfp.test();
 
 	}
 }
