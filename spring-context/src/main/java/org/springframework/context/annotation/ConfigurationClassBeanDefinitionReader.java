@@ -150,6 +150,7 @@ class ConfigurationClassBeanDefinitionReader {
 			registerBeanDefinitionForImportedConfigurationClass(configClass);
 		}
 		for (BeanMethod beanMethod : configClass.getBeanMethods()) {
+			// 将解析的@Bean,解析为BeanDefinition 存放map
 			loadBeanDefinitionsForBeanMethod(beanMethod);
 		}
 

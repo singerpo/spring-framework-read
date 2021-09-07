@@ -17,22 +17,22 @@ public class IndexService implements InitializingBean {
 	// OrderMapper orderMapper;
 
 	public IndexService(){
-		System.out.println("IndexService Constructor");
+		// System.out.println("IndexService Constructor");
 	}
 
 	public void test(){
-		System.out.println(" IndexService test" +
-				userService.getFlag());
+		// System.out.println(" IndexService test" +
+		// 		userService.getFlag());
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		System.out.println("IndexService afterPropertiesSet");
+		// System.out.println("IndexService afterPropertiesSet");
 	}
 
 	@PostConstruct
 	public void init(){
-		System.out.println("IndexService init");
+		// System.out.println("IndexService init");
 	}
 
 	public void setUserService(UserService userService) {

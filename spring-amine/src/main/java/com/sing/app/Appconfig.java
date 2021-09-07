@@ -32,6 +32,7 @@ public class Appconfig {
 
 	@Bean
 	public SqlSessionFactory sqlSessionFactory() throws IOException {
+		System.out.println("@Bean sqlSessionFactory");
 		String resource = "mybatis-config.xml";
 		InputStream inputStream = Resources.getResourceAsStream(resource);
 		SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
