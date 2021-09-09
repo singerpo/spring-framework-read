@@ -1898,7 +1898,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		Object wrappedBean = bean;
 		if (mbd == null || !mbd.isSynthetic()) {
 			//  BeanPostProcessor 前置方法执行
-			// ApplicationContextAwareProcessor#postProcessBeforeInitialization主要执行ApplicationContextAware等aware接口方法
+			// ApplicationContextAwareProcessor#postProcessBeforeInitialization主要执行ApplicationContextAware等aware接口
 			// CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBeanPostProcessor#postProcessBeforeInitialization
 			// 执行@PostConstruct标记的初始化方法
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
