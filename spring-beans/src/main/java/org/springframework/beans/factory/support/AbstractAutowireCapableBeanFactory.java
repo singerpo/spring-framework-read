@@ -513,7 +513,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
-			// 如果 bean 配置了后置处理器 PostProcessor,则这里返回一个 proxy 代理对象
+			// 【第一次调用后置处理器】如果 bean 配置了后置处理器 PostProcessor,则这里返回一个 proxy 代理对象
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -571,7 +571,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		if (instanceWrapper == null) {
 			/**
 			 * ！！！！！！！！！！
-			 * 实例化bean对象
+			 * 【里面第二次调用后置处理器】实例化bean对象
 			 * ！！！！！！！！！！
 			 */
 			instanceWrapper = createBeanInstance(beanName, mbd, args);
@@ -589,7 +589,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		synchronized (mbd.postProcessingLock) {
 			if (!mbd.postProcessed) {
 				try {
-					// 后置方法执行 BeanPostProcessor
+					// 【第三次调用后置处理器】后置方法执行 BeanPostProcessor
 					//MergedBeanDefinitionPostProcessor#postProcessMergedBeanDefinition
 					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
 				}
@@ -611,7 +611,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				logger.trace("Eagerly caching bean '" + beanName +
 						"' to allow for resolving potential circular references");
 			}
-			// 三级缓存（lamb表达式的执行进行aop）
+			// 【第四次调用后置处理器】三级缓存（lamb表达式的执行进行aop）
 			// 这里是一个 ObjectFactory 的匿名内部类，为了防止循环引用，尽早持有对象的应用
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
@@ -622,12 +622,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		try {
 			/**
 			 * ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
-			 * 属性注入
+			 * 【里面会完成第五次和第六次后置处理器】属性注入
 			 * 把生成的 bean 对象的依赖关系设置好，完成整个依赖注入过程
 			 * ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
 			 */
 			populateBean(beanName, mbd, instanceWrapper);
-			// 初始化 bean 对象
+			// 【里面会完成第七次和第八次后置处理器】初始化 bean 对象
 			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		}
 		catch (Throwable ex) {
@@ -1448,7 +1448,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Give any InstantiationAwareBeanPostProcessors the opportunity to modify the
 		// state of the bean before properties are set. This can be used, for example,
 		// to support styles of field injection.
-		// 在设置属性之前调用 bean 的 PostProcessor 后置处理器
+		// 【第五次调用后置处理器】在设置属性之前调用 bean 的 PostProcessor 后置处理器
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			for (InstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().instantiationAware) {
 				if (!bp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) {
@@ -1493,7 +1493,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					if (filteredPds == null) {
 						filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
 					}
-					// 使用 BeanProcessor 处理器处理属性值
+					// 【第六次调用后置处理器】使用 BeanProcessor 处理器处理属性值
 					pvsToUse = bp.postProcessPropertyValues(pvs, filteredPds, bw.getWrappedInstance(), beanName);
 					if (pvsToUse == null) {
 						return;
@@ -1897,7 +1897,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		Object wrappedBean = bean;
 		if (mbd == null || !mbd.isSynthetic()) {
-			//  BeanPostProcessor 前置方法执行
+			//  【第七次调用后置处理器】BeanPostProcessor 前置方法执行
 			// ApplicationContextAwareProcessor#postProcessBeforeInitialization主要执行ApplicationContextAware等aware接口
 			// CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBeanPostProcessor#postProcessBeforeInitialization
 			// 执行@PostConstruct标记的初始化方法
@@ -1914,7 +1914,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					beanName, "Invocation of init method failed", ex);
 		}
 		if (mbd == null || !mbd.isSynthetic()) {
-			//BeanPostProcessor 后置方法执行
+			//【第八次调用后置处理器】BeanPostProcessor 后置方法执行
 			//AbstractAutoProxyCreator#postProcessAfterInitialization进行aop
 			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
 		}
