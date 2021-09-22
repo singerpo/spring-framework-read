@@ -1,7 +1,7 @@
 package com.face.philosopher.dinner;
 
 /**
- * 哲学家
+ * P5哲学家问题
  */
 public class Philosohper extends Thread {
 	/**

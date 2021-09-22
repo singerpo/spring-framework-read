@@ -1,7 +1,7 @@
 package com.face.philosopher.dinner;
 
 /**
- * 模拟哲学家问题
+ * P5模拟哲学家问题
  * 主要避免死锁问题
  */
 public class T01DeadLock {
