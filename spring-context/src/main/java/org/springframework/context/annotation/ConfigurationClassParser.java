@@ -192,6 +192,7 @@ class ConfigurationClassParser {
 			}
 		}
 
+		//执行importSelector
 		this.deferredImportSelectorHandler.process();
 	}
 
@@ -811,6 +812,7 @@ class ConfigurationClassParser {
 		public void processGroupImports() {
 			for (DeferredImportSelectorGrouping grouping : this.groupings.values()) {
 				Predicate<String> exclusionFilter = grouping.getCandidateFilter();
+				// 获取imports
 				grouping.getImports().forEach(entry -> {
 					ConfigurationClass configurationClass = this.configurationClasses.get(entry.getMetadata());
 					try {
