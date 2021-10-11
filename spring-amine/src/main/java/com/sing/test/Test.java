@@ -23,10 +23,10 @@ public class Test {
 	// }
 
 	public static void main(String[] args) {
-//		ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext("");
-		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		applicationContext.register(Appconfig.class);
-		applicationContext.refresh();
+		ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("");
+// 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+// 		applicationContext.register(Appconfig.class);
+// 		applicationContext.refresh();
 //		IndexService indexService = applicationContext.getBean(IndexService.class);
 //		indexService.test();
 // 		System.out.println(applicationContext.getBean("userMapper"));

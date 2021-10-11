@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SingImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
+public class   SingImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry, BeanNameGenerator importBeanNameGenerator) {
 		String path = "com.mybatis.mapper";

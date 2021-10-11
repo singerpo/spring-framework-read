@@ -10,7 +10,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExtendBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+public class  ExtendBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         // GenericBeanDefinition xxService = (GenericBeanDefinition) beanFactory.getBeanDefinition("xxService");

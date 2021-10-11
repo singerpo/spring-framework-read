@@ -116,6 +116,8 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor#postProcessBeforeDestruction
  * @see DisposableBean#destroy
  * @see org.springframework.beans.factory.support.RootBeanDefinition#getDestroyMethodName
+ *
+ * Bean工厂，整个容器的根接口，也是容器的入口
  */
 public interface BeanFactory {
 
