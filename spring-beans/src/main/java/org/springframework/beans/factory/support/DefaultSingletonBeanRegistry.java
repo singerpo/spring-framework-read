@@ -38,6 +38,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
+ * 对接口SingletonBeanRegistry各函数的实现
+ *
+ * 共享bean实例的通用注册表，实现了SingletonBeanRegistry.允许注册单例实例，
+ * 该实例应该为注册中心的所有调用者共享，并通过bean名称获得。还支持一次性bean实例
+ * 的注册（它可能对应于已注册的单例，也可能不对应于已注册的单例），在注册表关闭是销毁.
+ * 可以注册bean之间的依赖关系，可以强制执行适当的关闭顺序
  * Generic registry for shared bean instances, implementing the
  * {@link org.springframework.beans.factory.config.SingletonBeanRegistry}.
  * Allows for registering singleton instances that should be shared
@@ -75,59 +81,75 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 
 	/** Cache of singleton objects: bean name to bean instance. */
+	// 一级缓存，用于保存BeanName 和 创建 bean 实例之间的关系
 	//单例对象容器，key:beanName,value:bean实例
 	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
 
 	/** Cache of singleton factories: bean name to ObjectFactory. */
-	// 三级缓存，key:beanName  value:对象工厂
+	// 三级缓存，用于保存BeanName和创建bean的工厂之间的关系（key:beanName  value:对象工厂）
 	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
 
 	/** Cache of early singleton objects: bean name to bean instance. */
 	// 二级缓存，key:beanName,value:bean 实例
+	// 保存BeanName和创建Bean实例之间的关系，与singletonFactories的不同之处在于，当一个单例bean被放到这里之后，那么当bean还在创建过程中
+	// 就可以通过getBean方法获取到，可以方便进行循环依赖的检测
 	private final Map<String, Object> earlySingletonObjects = new ConcurrentHashMap<>(16);
 
 	/** Set of registered singletons, containing the bean names in registration order. */
+	// 用来保存当前所有已经注册的bean
 	private final Set<String> registeredSingletons = new LinkedHashSet<>(256);
 
 	/** Names of beans that are currently in creation. */
-	// 当前正在实例化的 beanName
+	// 当前正在创建过程中的 beanName 集合
 	private final Set<String> singletonsCurrentlyInCreation =
 			Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
 	/** Names of beans currently excluded from in creation checks. */
+	// 当前在创建检查中排除的beanName
 	private final Set<String> inCreationCheckExclusions =
 			Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
 	/** Collection of suppressed Exceptions, available for associating related causes. */
+	// 抑制的异常列表，可用于关联相关原因
 	@Nullable
 	private Set<Exception> suppressedExceptions;
 
 	/** Flag that indicates whether we're currently within destroySingletons. */
+	// 指示我们当前是否在destroySingletons中的标识
 	private boolean singletonsCurrentlyInDestruction = false;
 
 	/** Disposable bean instances: bean name to disposable instance. */
+	// 一次性bean实例
 	private final Map<String, Object> disposableBeans = new LinkedHashMap<>();
 
 	/** Map between containing bean names: bean name to Set of bean names that the bean contains. */
+	// 在包含的Bean名称之间映射：bean名称-bean包含的bean名称集合
 	private final Map<String, Set<String>> containedBeanMap = new ConcurrentHashMap<>(16);
 
 	/** Map between dependent bean names: bean name to Set of dependent bean names. */
+	// 存储 bean名称到该bean名称所要依赖的Bean名称集合
 	private final Map<String, Set<String>> dependentBeanMap = new ConcurrentHashMap<>(64);
 
 	/** Map between depending bean names: bean name to Set of bean names for the bean's dependencies. */
+	// 存储 bean名称到依赖于该bean名称的bean名称集合
 	private final Map<String, Set<String>> dependenciesForBeanMap = new ConcurrentHashMap<>(64);
 
-
+	// 在给定的bean名称下，在bean注册器中将给定的现有对象注册为单例
 	@Override
 	public void registerSingleton(String beanName, Object singletonObject) throws IllegalStateException {
 		Assert.notNull(beanName, "Bean name must not be null");
 		Assert.notNull(singletonObject, "Singleton object must not be null");
+		// 使用singletonObjects作为锁，保证线程安全
 		synchronized (this.singletonObjects) {
+			// 获取beanName在singletonObjects中的单例对象
 			Object oldObject = this.singletonObjects.get(beanName);
+			// 如果成功获得对象，抛异常
 			if (oldObject != null) {
+				// 非法状态异常：不能注册对象，该对象已存在
 				throw new IllegalStateException("Could not register object [" + singletonObject +
 						"] under bean name '" + beanName + "': there is already object [" + oldObject + "] bound");
 			}
+			// 将beanName和singletonObject的映射关系添加到该工厂的单例缓存中
 			addSingleton(beanName, singletonObject);
 		}
 	}

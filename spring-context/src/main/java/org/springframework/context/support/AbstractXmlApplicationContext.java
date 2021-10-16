@@ -45,6 +45,7 @@ import org.springframework.lang.Nullable;
  */
 public abstract class AbstractXmlApplicationContext extends AbstractRefreshableConfigApplicationContext {
 
+	// 设置xml文件的验证标识，默认是true
 	private boolean validating = true;
 
 
@@ -84,6 +85,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 		/** DefaultListableBeanFactory 实现了 BeanDefinitionRegistry 接口，在初始化 XmlBeanDefinitionReader 时
 		 * 将 BeanDefinition 注册器注入该 BeanDefinition 读取器
 		 * 创建用于从 Xml 中读取 BeanDefinition 的读取器，并通过回调设置到 IoC 容器中去,容器使用该读取器读取 BeanDefinition 资源
+		 * [使用了适配器模式]
 		 */
 		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
 

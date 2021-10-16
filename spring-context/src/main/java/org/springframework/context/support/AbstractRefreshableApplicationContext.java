@@ -129,10 +129,12 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 		try {
 			//创建Ioc容器，DefaultListableBeanFactory实现了ConfigurableListableBeanFactory接口
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
+			// 为序列化指定id,可以从id反序列到beanFactory对象
 			beanFactory.setSerializationId(getId());
-			//对IoC容器进行定制化，如设置启动参数，开启注解的自动装配等
+			// 定制beanFactory,设置相关属性，包括是否允许覆盖同名称的不同定义的对象以及循环依赖
 			customizeBeanFactory(beanFactory);
-			// 载入BeanDefinition,在当前类中只定义了抽象的loadBeanDefinitions()方法，具体实现调用子类
+			// （载入BeanDefinition,在当前类中只定义了抽象的loadBeanDefinitions()方法，具体实现调用子类）
+			// 初始化documentReader,并进行XML文件读取和解析
 			loadBeanDefinitions(beanFactory);
 			//给自己的属性赋值
 			this.beanFactory = beanFactory;

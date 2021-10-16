@@ -23,16 +23,16 @@ public class Test {
 	// }
 
 	public static void main(String[] args) {
-		ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("");
-// 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-// 		applicationContext.register(Appconfig.class);
-// 		applicationContext.refresh();
-//		IndexService indexService = applicationContext.getBean(IndexService.class);
-//		indexService.test();
+		ClassPathXmlApplicationContext applicationContext1 = new ClassPathXmlApplicationContext("");
+ 		// AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		// applicationContext.register(Appconfig.class);
+		// applicationContext.refresh();
+		// IndexService indexService = applicationContext.getBean(IndexService.class);
+		// indexService.test();
 // 		System.out.println(applicationContext.getBean("userMapper"));
 // 		System.out.println(applicationContext.getBean("&userMapper"));
-		System.out.println(applicationContext.getBean("&testFactoryBean"));
-		System.out.println(applicationContext.getBean("testFactoryBean"));
+// 		System.out.println(applicationContext.getBean("&testFactoryBean"));
+// 		System.out.println(applicationContext.getBean("testFactoryBean"));
 // 		TestBfp testBfp = applicationContext.getBean(TestBfp.class);
 // 		testBfp.test();
 

@@ -257,6 +257,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			throws BeansException {
 
 		// 根据用户给定的名称（也可能是别名alias)获取 IoC 容器中与 BeanDefinition 唯一对应的 beanName
+		// 提取对应的BeanName(处理转换&beanName,别名)
 		String beanName = transformedBeanName(name);
 		Object beanInstance;
 
@@ -286,6 +287,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		else {
 			// Fail if we're already creating this bean instance:
 			// We're assumably within a circular reference.
+			// 当对象是原型模式，如果存在循环依赖的情况，那么直接抛出异常
 			if (isPrototypeCurrentlyInCreation(beanName)) {
 				throw new BeanCurrentlyInCreationException(beanName);
 			}

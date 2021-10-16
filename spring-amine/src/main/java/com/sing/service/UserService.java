@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 	@Autowired
 	IndexService indexService;
-	private String flag;
+	private String flag = "";
 
 	public String getFlag() {
 		return flag;

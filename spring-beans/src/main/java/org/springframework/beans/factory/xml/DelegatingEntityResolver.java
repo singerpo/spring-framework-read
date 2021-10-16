@@ -26,6 +26,13 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * EntityResolver接口表示的意思是如果应用程序实现自定义处理外部实体，那么必须实现此接口，并且使用setEntityResolver方法向SAX驱动器注册一个实例
+ * 本质表示的意思是，对于解析一个xml，SAX首先会读取改xml文档上的声明，根据声明去寻找dtd定义，以方便对文档进行验证，默认的寻找规则就是通过网络
+ * 来根据URI地址来下载DTD声明，并进行验证，下载过程中如果有网络的问题，那么就有可能报错
+ *
+ * EntityResolver的作用是项目本身就可以提供一个如何寻找DTD的声明方法，即由程序来实现寻找DTD声明的过程。比如我们将DTD放在项目的某处在实现时直接
+ * 将文档读取并返回SAX即可，这样就避免了通过网络来寻找DTD的声明
+ *
  * {@link EntityResolver} implementation that delegates to a {@link BeansDtdResolver}
  * and a {@link PluggableSchemaResolver} for DTDs and XML schemas, respectively.
  *
@@ -60,6 +67,7 @@ public class DelegatingEntityResolver implements EntityResolver {
 	 */
 	public DelegatingEntityResolver(@Nullable ClassLoader classLoader) {
 		this.dtdResolver = new BeansDtdResolver();
+		//（当完成这行代码后，schemaResolver对象的schemaMappings属性被完成了赋值操作，因为debug模式工具帮我们调用了toString方法）
 		this.schemaResolver = new PluggableSchemaResolver(classLoader);
 	}
 
