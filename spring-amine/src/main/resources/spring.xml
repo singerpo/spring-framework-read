@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:custom="http://www.sing.com/schema/custom" xmlns:context="http://www.springframework.org/schema/context"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
-        https://www.springframework.org/schema/beans/spring-beans.xsd">
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.sing.com/schema/custom http://www.sing.com/schema/custom/spring-custom.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
 
-	<bean id="indexService" class="com.sing.service.IndexService">
-		<!-- collaborators and configuration for this bean go here -->
-		<property name="userService" ref="userService"></property>
+	<!--	<bean id="indexService" class="com.sing.service.IndexService">
+			<property name="userService" ref="userService"></property>
+		</bean>
+
+		<bean id="userService" class="com.sing.service.UserService">
+		</bean>-->
+<!--	<custom:test password="11111" username="qq" email="qq" ></custom:test>-->
+	<bean id="customer" class="com.sing.selfEditor.Customer">
+		<property name="name" value="李四"></property>
+		<property name="address" value="湖北省_襄阳市_襄州区"></property>
 	</bean>
-
-	<bean id="userService" class="com.sing.service.UserService">
-		<!-- collaborators and configuration for this bean go here -->
+	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+		<property name="propertyEditorRegistrars">
+			<list>
+				<bean class="com.sing.selfEditor.AddressPropertyEditorRegistrar"></bean>
+			</list>
+		</property>
 	</bean>
-
-	<!-- more bean definitions go here -->
-
 </beans>

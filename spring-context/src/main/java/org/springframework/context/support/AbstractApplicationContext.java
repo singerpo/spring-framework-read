@@ -587,6 +587,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			 * 做容器刷新前的准备
 			 * 1.设置容器的启动时间
 			 * 2.设置关闭状态为false、设置活跃状态为true
+			 *
 			 * 3.获取Environment对象,并加载当前系统的属性值到Environment对象中
 			 * 4.准备监听器和事件的集合对象，默认为空的集合
 			 */
@@ -695,7 +696,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Prepare this context for refreshing, setting its startup date and
 	 * active flag as well as performing any initialization of property sources.
 	 */
-	protected void prepareRefresh() {
+	protected void  prepareRefresh() {
 		// Switch to active.
 		// 设置容器启动时间
 		this.startupDate = System.currentTimeMillis();
@@ -780,6 +781,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
 		}
 		// 为beanFactory增加一个默认的propertyEditor,这个主要是对bean的属性等设置管理的一个工具类
+		// 自定义扩展点
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
 		// Configure the bean factory with context callbacks.

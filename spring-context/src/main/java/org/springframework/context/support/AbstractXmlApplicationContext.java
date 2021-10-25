@@ -87,7 +87,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 		 * 创建用于从 Xml 中读取 BeanDefinition 的读取器，并通过回调设置到 IoC 容器中去,容器使用该读取器读取 BeanDefinition 资源
 		 * [使用了适配器模式]
 		 */
-		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
+ 		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
 
 		// Configure the bean definition reader with this context's
 		// resource loading environment.
@@ -103,6 +103,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 		// Allow a subclass to provide custom initialization of the reader,
 		// then proceed with actually loading the bean definitions.
 		// 初始化 BeanDefiniton 读取器，该方法同时启用了XML的校验机制
+		//[使用了适配器模式]
 		initBeanDefinitionReader(beanDefinitionReader);
 		// BeanDefinition读取器真正实现加载的方法
 		// 用传进来的 XmlBeanDefinitionReader 读取器读取 .xml 文件中配置的bean
@@ -142,7 +143,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 
 		// 获取存放了BeanDefintion 的所有 Resource,FileSystemXmlApplicationContext 类未对
 		// getConfigResources()进行重写，所以调用父类的，return null。
-		// 而ClassPathXmlApplicationContext 对该方法进行了重写，返回设置的值
+ 		// 而ClassPathXmlApplicationContext 对该方法进行了重写，返回设置的值
 		Resource[] configResources = getConfigResources();
 		if (configResources != null) {
 			// XmlBeanDefinitionReader 调用其父类 AbstractBeanDefinitionReader的方法加载 BeanDefintion

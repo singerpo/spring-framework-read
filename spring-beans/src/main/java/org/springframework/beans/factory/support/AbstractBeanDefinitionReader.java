@@ -228,7 +228,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 				// 将指定位置的BeanDefinition 资源文件解析为IoC 容器封装的资源
 				// 这里的getResources 从FileSystemXmlApplicationContext的继承体系可以明确，其走的是
 				// DefaultResourceLoader中的实现
-				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
+ 				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
 				// 委派调用其子类 XmlBeanDefinitionReader 的方法，实现加载功能
 				int count = loadBeanDefinitions(resources);
 				if (actualResources != null) {

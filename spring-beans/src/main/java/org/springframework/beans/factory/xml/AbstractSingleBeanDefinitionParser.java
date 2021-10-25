@@ -79,12 +79,15 @@ public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDef
 		BeanDefinition containingBd = parserContext.getContainingBeanDefinition();
 		if (containingBd != null) {
 			// Inner bean definition must receive same scope as containing bean.
+			// 如存在父类则使用父类的scope属性
 			builder.setScope(containingBd.getScope());
 		}
 		if (parserContext.isDefaultLazyInit()) {
 			// Default-lazy-init applies to custom bean definitions as well.
+			// 配置延时加载
 			builder.setLazyInit(true);
 		}
+		// 调用子类重写doParse方法进行解析
 		doParse(element, parserContext, builder);
 		return builder.getBeanDefinition();
 	}

@@ -183,7 +183,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 					Element ele = (Element) node;
 					// 如果ele 定义的 Document 的元素节点使用的是 Spring 默认的 XML 命名空间
 					if (delegate.isDefaultNamespace(ele)) {
-						// 使用 Spring 的 bean 解析规则解析元素节点
+						// 使用 Spring 的 bean 解析规则解析元素节点【import、alias、bean、beans标签】
 						parseDefaultElement(ele, delegate);
 					}
 					else {
@@ -203,7 +203,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	/**
 	 * 使用 Sprng 的 bean 解析规则，解析 Spring 元素节点
 	 */
-	private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
+	private void  parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
 		// 解析 <Import> 元素
 		if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
 			importBeanDefinitionResource(ele);

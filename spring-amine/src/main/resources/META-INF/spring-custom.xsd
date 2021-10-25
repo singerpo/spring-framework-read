@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+		xmlns="http://www.sing.com/schema/custom"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		targetNamespace="http://www.sing.com/schema/custom"
+		elementFormDefault="qualified">
+	<xsd:annotation>
+		<xsd:documentation>
+			<![CDATA[自定义标签]]>
+		</xsd:documentation>
+	</xsd:annotation>
+
+	<xsd:element name="test">
+		<xsd:complexType>
+			<xsd:attribute name="username" type="xsd:string"/>
+			<xsd:attribute name="email" type="xsd:string"/>
+			<xsd:attribute name="password" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

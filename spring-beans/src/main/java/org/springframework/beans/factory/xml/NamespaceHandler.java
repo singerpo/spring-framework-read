@@ -70,7 +70,7 @@ public interface NamespaceHandler {
 	 * @return the primary {@code BeanDefinition} (can be {@code null} as explained above)
 	 */
 	@Nullable
-	BeanDefinition parse(Element element, ParserContext parserContext);
+	BeanDefinition  parse(Element element, ParserContext parserContext);
 
 	/**
 	 * Parse the specified {@link Node} and decorate the supplied
