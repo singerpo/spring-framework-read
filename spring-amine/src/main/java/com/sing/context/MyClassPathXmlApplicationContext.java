@@ -1,5 +1,6 @@
 package com.sing.context;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -29,5 +30,10 @@ public class MyClassPathXmlApplicationContext extends ClassPathXmlApplicationCon
 		super.setAllowBeanDefinitionOverriding(true);
 		super.setAllowCircularReferences(true);
 		super.customizeBeanFactory(beanFactory);
+	}
+
+	@Override
+	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		System.out.println("扩展实现 postProcessBeanFactory方法");
 	}
 }

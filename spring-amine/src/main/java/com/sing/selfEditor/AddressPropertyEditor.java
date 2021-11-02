@@ -6,7 +6,7 @@ public class AddressPropertyEditor extends PropertiesEditor {
 
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
-		String[] s = text.split("-");
+		String[] s = text.split("_");
 		Address address = new Address();
 		address.setProvince(s[0]);
 		address.setCity(s[1]);

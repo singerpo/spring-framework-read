@@ -24,7 +24,7 @@ public class Test {
 
 	public static void main(String[] args) {
 		ClassPathXmlApplicationContext applicationContext1 = new ClassPathXmlApplicationContext("spring.xml");
- 		// AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+ 		 AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		// applicationContext.register(Appconfig.class);
 		// applicationContext.refresh();
 		// IndexService indexService = applicationContext.getBean(IndexService.class);
