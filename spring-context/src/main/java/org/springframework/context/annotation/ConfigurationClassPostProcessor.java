@@ -363,7 +363,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
 		// 存放相关的BeanDefinitonHolder对象，用于将之前加入的configCandidates去重
 		Set<BeanDefinitionHolder> candidates = new LinkedHashSet<>(configCandidates);
-		// 存放扫描包下的所有bean，用于判断是否应用处理过了
+		// 存放扫描包下的所有bean，用于判断是否处理过了
 		Set<ConfigurationClass> alreadyParsed = new HashSet<>(configCandidates.size());
 		do {
 			StartupStep processConfig = this.applicationStartup.start("spring.context.config-classes.parse");

@@ -50,7 +50,7 @@ import org.springframework.stereotype.Component;
  * @since 3.1
  */
 abstract class ConfigurationClassUtils {
-
+	//@Configuration注解标准的类且proxyMethds不为false，那么将属性标注为full
 	public static final String CONFIGURATION_CLASS_FULL = "full";
 
 	public static final String CONFIGURATION_CLASS_LITE = "lite";
@@ -85,7 +85,9 @@ abstract class ConfigurationClassUtils {
 	public static boolean checkConfigurationClassCandidate(
 			BeanDefinition beanDef, MetadataReaderFactory metadataReaderFactory) {
 
+		// 获取bean定义信息中的class类名
 		String className = beanDef.getBeanClassName();
+		// 如果className为空或者bean定义信息中factoryMethodName不等于空，那么直接返回
 		if (className == null || beanDef.getFactoryMethodName() != null) {
 			return false;
 		}
@@ -97,6 +99,7 @@ abstract class ConfigurationClassUtils {
 		if (beanDef instanceof AnnotatedBeanDefinition &&
 				className.equals(((AnnotatedBeanDefinition) beanDef).getMetadata().getClassName())) {
 			// Can reuse the pre-parsed metadata from the given BeanDefinition...
+			// 从当前bean定义信息中获取元数据信息
 			metadata = ((AnnotatedBeanDefinition) beanDef).getMetadata();
 		}
 		// 判断是否是Spring中默认的BeanDefinition
@@ -105,7 +108,7 @@ abstract class ConfigurationClassUtils {
 			// since we possibly can't even load the class file for this Class.
 			// 获取当前bean对象的Class对象
 			Class<?> beanClass = ((AbstractBeanDefinition) beanDef).getBeanClass();
-			// 判断该类是否是指定类的子类
+			// 如果class实例是下面四种接口的实现，直接返回
 			if (BeanFactoryPostProcessor.class.isAssignableFrom(beanClass) ||
 					BeanPostProcessor.class.isAssignableFrom(beanClass) ||
 					AopInfrastructureBean.class.isAssignableFrom(beanClass) ||
@@ -115,9 +118,12 @@ abstract class ConfigurationClassUtils {
 			// 根据beanClass生成对应的AnnotationMetadata对象
 			metadata = AnnotationMetadata.introspect(beanClass);
 		}
+		// 如果上述两种情况都不符合
 		else {
 			try {
+				// 获取className的MetadataReader实例
 				MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(className);
+				// 读取底层类的完整注释元数据，包括带注解方法的元数据
 				metadata = metadataReader.getAnnotationMetadata();
 			}
 			catch (IOException ex) {
@@ -129,7 +135,7 @@ abstract class ConfigurationClassUtils {
 			}
 		}
 
-		// 判断当前BeanDefinition是否存在@Configuration注解
+		// 获取当前BeanDefinition的元数据被@Configuration注解标注的属性字典值
 		Map<String, Object> config = metadata.getAnnotationAttributes(Configuration.class.getName());
 		// 如果包含@Configuration注解，同时proxyBeanMethods属性不为false，那么设置configurationClass属性为full
 		if (config != null && !Boolean.FALSE.equals(config.get("proxyBeanMethods"))) {
