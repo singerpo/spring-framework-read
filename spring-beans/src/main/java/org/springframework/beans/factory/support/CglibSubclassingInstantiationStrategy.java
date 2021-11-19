@@ -54,18 +54,21 @@ import org.springframework.util.StringUtils;
 public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationStrategy {
 
 	/**
+	 * 如果没有override方法覆盖的话，那么索引位置为0
 	 * Index in the CGLIB callback array for passthrough behavior,
 	 * in which case the subclass won't override the original class.
 	 */
 	private static final int PASSTHROUGH = 0;
 
 	/**
+	 * 如果有lookup-method的覆盖，那么索引位置为1
 	 * Index in the CGLIB callback array for a method that should
 	 * be overridden to provide <em>method lookup</em>.
 	 */
 	private static final int LOOKUP_OVERRIDE = 1;
 
 	/**
+	 * 如果有replace-method的覆盖，那么索引位置为2
 	 * Index in the CGLIB callback array for a method that should
 	 * be overridden using generic <em>method replacer</em> functionality.
 	 */
@@ -95,7 +98,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 	 * 为了避免 3.2 之前的 Spring 版本中的外部 cglib依赖而创建的内部类
 	 */
 	private static class CglibSubclassCreator {
-
+		// 此处定义了一个回调类型的数组，后面MethodOverrideCallbackFilter通过指定
 		private static final Class<?>[] CALLBACK_TYPES = new Class<?>[]
 				{NoOp.class, LookupOverrideMethodInterceptor.class, ReplaceOverrideMethodInterceptor.class};
 
@@ -122,12 +125,15 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 			// 实例化 Enhancer对象，并为 Enhancer对象设置父类，生产 Java 对象的参数，比如：基类、回调方法等
 			Class<?> subclass = createEnhancedSubclass(this.beanDefinition);
 			Object instance;
+			// 如果构造器等于空，那么直接通过反射来实例化对象
 			if (ctor == null) {
 				instance = BeanUtils.instantiateClass(subclass);
 			}
 			else {
 				try {
+					// 通过cglib对象来根据参数类型获取对应的构造器
 					Constructor<?> enhancedSubclassConstructor = subclass.getConstructor(ctor.getParameterTypes());
+					// 通过构造器来创建对象
 					instance = enhancedSubclassConstructor.newInstance(args);
 				}
 				catch (Exception ex) {
@@ -149,6 +155,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 		 * definition, using CGLIB.
 		 */
 		private Class<?> createEnhancedSubclass(RootBeanDefinition beanDefinition) {
+			// cglib规定用法，对原始class进行增强，并设置callback
 			Enhancer enhancer = new Enhancer();
 			// 将 bean 本身作为其父类
 			enhancer.setSuperclass(beanDefinition.getBeanClass());
@@ -157,7 +164,9 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 				ClassLoader cl = ((ConfigurableBeanFactory) this.owner).getBeanClassLoader();
 				enhancer.setStrategy(new ClassLoaderAwareGeneratorStrategy(cl));
 			}
+			// 过滤，定义逻辑来指定调用的callback下标
 			enhancer.setCallbackFilter(new MethodOverrideCallbackFilter(beanDefinition));
+			//
 			enhancer.setCallbackTypes(CALLBACK_TYPES);
 			// 使用 CGLIB 的 create()方法生成实例对象
 			return enhancer.createClass();

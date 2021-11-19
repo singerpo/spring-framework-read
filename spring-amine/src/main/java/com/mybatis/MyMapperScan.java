@@ -1,7 +1,6 @@
 package com.mybatis;
 
-import org.mybatis.spring.annotation.MapperScannerRegistrar;
-import org.mybatis.spring.annotation.MapperScans;
+
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;

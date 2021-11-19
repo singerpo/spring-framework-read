@@ -193,8 +193,10 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 
 	private boolean enforceDestroyMethod = true;
 
+	// 是否是用户定义的而不是应用程序本身定义的，创建AOP的时候为ture
 	private boolean synthetic = false;
 
+	// 定义bean的应用（application:用户定义 infrastructure:Spring内部使用与用户无关
 	private int role = BeanDefinition.ROLE_APPLICATION;
 
 	@Nullable
@@ -469,7 +471,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 		if (className == null) {
 			return null;
 		}
-		// 加载类
+		// 加载类获取Class对象
 		Class<?> resolvedClass = ClassUtils.forName(className, classLoader);
 		this.beanClass = resolvedClass;
 		// 返回
@@ -1148,6 +1150,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * @throws BeanDefinitionValidationException in case of validation failure
 	 */
 	protected void prepareMethodOverride(MethodOverride mo) throws BeanDefinitionValidationException {
+		// 获取对应类中对应方法名的个数
 		int count = ClassUtils.getMethodCountForName(getBeanClass(), mo.getMethodName());
 		if (count == 0) {
 			throw new BeanDefinitionValidationException(
@@ -1156,6 +1159,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 		}
 		else if (count == 1) {
 			// Mark override as not overloaded, to avoid the overhead of arg type checking.
+			// 标记methodOverride暂未被覆盖，避免参数类型检查的开销
 			mo.setOverloaded(false);
 		}
 	}

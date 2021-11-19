@@ -57,6 +57,7 @@ public interface GenericConverter {
 	Set<ConvertiblePair> getConvertibleTypes();
 
 	/**
+	 * 转换源对象到目标类型的描述
 	 * Convert the source object to the targetType described by the {@code TypeDescriptor}.
 	 * @param source the source object to convert (may be {@code null})
 	 * @param sourceType the type descriptor of the field we are converting from

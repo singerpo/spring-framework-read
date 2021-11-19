@@ -176,6 +176,7 @@ public abstract class AbstractApplicationEventMulticaster
 	}
 
 	/**
+	 * 获取应用程序的事件监听器
 	 * Return a Collection of ApplicationListeners matching the given
 	 * event type. Non-matching listeners get excluded early.
 	 * @param event the event to be propagated. Allows for excluding
@@ -436,6 +437,7 @@ public abstract class AbstractApplicationEventMulticaster
 
 
 	/**
+	 * 获取应用程序的事件监听器
 	 * Helper class that encapsulates a specific set of target listeners,
 	 * allowing for efficient retrieval of pre-filtered listeners.
 	 * <p>An instance of this helper gets cached per event type and source type.
@@ -457,13 +459,16 @@ public abstract class AbstractApplicationEventMulticaster
 				return null;
 			}
 
+			// 创建一个指定大小的ApplicationListener监听器集合
 			List<ApplicationListener<?>> allListeners = new ArrayList<>(
 					applicationListeners.size() + applicationListenerBeans.size());
 			allListeners.addAll(applicationListeners);
+			// 如果存放监听器的beanName集合不为空
 			if (!applicationListenerBeans.isEmpty()) {
 				BeanFactory beanFactory = getBeanFactory();
 				for (String listenerBeanName : applicationListenerBeans) {
 					try {
+						// 获取指定beanName的监听器实例，添加到集合中
 						allListeners.add(beanFactory.getBean(listenerBeanName, ApplicationListener.class));
 					}
 					catch (NoSuchBeanDefinitionException ex) {

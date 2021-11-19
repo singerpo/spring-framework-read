@@ -630,6 +630,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				/**
 				 * 为BeanFactory注册BeanPostProcessor事件处理器
 				 *  BeanPostProcessor是Bean后置处理器，用户监听容器触发的事件
+				 *  （获取所有的beanPostProcessor单例bean,然后注册;
+				 *  注册BeanPostProcessorChecker实例、重新注册ApplicationListenerDetector实例）
 				 */
 				registerBeanPostProcessors(beanFactory);
 				beanPostProcess.end();
@@ -889,7 +891,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			// Make MessageSource aware of parent MessageSource.
 			// 当父类bean工厂不为空，并且这个bean对象是HierachicalMessageSource类型
 			if (this.parent != null && this.messageSource instanceof HierarchicalMessageSource) {
-				// 类型强制转换，转换为HierarchicalMessageSource类型
+				// 类型强制转换，转换为 HierarchicalMessageSource 类型
 				HierarchicalMessageSource hms = (HierarchicalMessageSource) this.messageSource;
 				// 判断父类的messageSource是否为空，如果等于空，则设置父类的messageSource
 				if (hms.getParentMessageSource() == null) {
@@ -1035,6 +1037,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
 		// Initialize conversion service for this context.
+		// 为上下文初始化类型转换器
 		// 这是 Spirng3 以后新加的代码，为容器指定一个转换服务（ConversionService)
 		// 在对某些 bean 属性进行转换时使用
 		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&
@@ -1052,6 +1055,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// (such as a PropertySourcesPlaceholderConfigurer bean) registered any before:
 		// at this point, primarily for resolution in annotation attribute values.
 		// 如果BeanFactory之前没有注册嵌入值解析器，则注册默认的嵌入值解析器，主要用于注解属性值的解析
+		// (判断在执行BeanFactoryPostProcessor时是否注册)
 		if (!beanFactory.hasEmbeddedValueResolver()) {
 			beanFactory.addEmbeddedValueResolver(strVal -> getEnvironment().resolvePlaceholders(strVal));
 		}
@@ -1068,7 +1072,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.setTempClassLoader(null);
 
 		// Allow for caching all bean definition metadata, not expecting further changes.
-		// 缓存容器中所有注册的 BeanDefinition 元数据，以防被修改
+		// 冻结容器中所有注册的 BeanDefinition 元数据，以防被修改
 		beanFactory.freezeConfiguration();
 
 		// Instantiate all remaining (non-lazy-init) singletons.

@@ -1,6 +1,5 @@
 package com.face.juc.A1B2C3;
 
-import org.springframework.context.support.StaticApplicationContext;
 
 import java.util.concurrent.locks.LockSupport;
 

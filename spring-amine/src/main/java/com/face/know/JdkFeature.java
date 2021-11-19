@@ -1,6 +1,5 @@
 package com.face.know;
 
-import org.springframework.beans.factory.ObjectFactory;
 
 /**
  * JDK新特性

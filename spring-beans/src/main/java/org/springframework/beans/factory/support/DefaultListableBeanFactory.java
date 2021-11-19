@@ -541,16 +541,22 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	@Override
 	public String[] getBeanNamesForType(@Nullable Class<?> type, boolean includeNonSingletons, boolean allowEagerInit) {
-		// 配置还未被冻结或者类型不允许早期初始化
+		// 配置还未被冻结或者类型为null或者不允许早期初始化
 		if (!isConfigurationFrozen() || type == null || !allowEagerInit) {
 			return doGetBeanNamesForType(ResolvableType.forRawClass(type), includeNonSingletons, allowEagerInit);
 		}
+		// 不管type是否为空，allowEagerInit是否为true
+		// 只要isConfigurationFrozen()为false就一定不会走这里
+		// 因为isConfigurationFrozen()为false表示BeanDefinition
+		//可能还会发生更改和添加，所以不能进行缓存
+		// 如果允许非单例的bean，那么从保存所有bean的集合中获取，否则从单例bean中获取
 		Map<Class<?>, String[]> cache =
 				(includeNonSingletons ? this.allBeanNamesByType : this.singletonBeanNamesByType);
 		String[] resolvedBeanNames = cache.get(type);
 		if (resolvedBeanNames != null) {
 			return resolvedBeanNames;
 		}
+		// 如果缓存中没有获取到，那么只能重新获取，获取到之后就存入缓存
 		resolvedBeanNames = doGetBeanNamesForType(ResolvableType.forRawClass(type), includeNonSingletons, true);
 		if (ClassUtils.isCacheSafe(type, getBeanClassLoader())) {
 			cache.put(type, resolvedBeanNames);
@@ -564,14 +570,23 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		// Check all bean definitions.
 		for (String beanName : this.beanDefinitionNames) {
 			// Only consider bean as eligible if the bean name is not defined as alias for some other bean.
+			// 如果是别名，则直接跳过
 			if (!isAlias(beanName)) {
 				try {
+					// 获取合并的BeanDefinition,合并的BeanDefinition指的是整合了父BeanDefinition的属性，然后属性值会转换为RootBeanDefinition
 					RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
 					// Only check bean definition if it is complete.
+					// 抽象的BeanDefinition是不做考虑的，抽象的就是拿来继承的
+					// 如果允许早起初始化，那么直接短路，进入方法体
+					// 如果不允许早起初始化，那么需要进一步判断，如果是不允许早期初始的，
+					// 并且beanClass已经被加载或者它是可以早期初始化的，那么如果当前Bean是工厂bean,并且指定的bean也是工厂bean
+					// 那么这个bean就必须被早期初始化，也就是说就不符合我们制定的allowEagerInit为false的情况，直接跳过
 					if (!mbd.isAbstract() && (allowEagerInit ||
 							(mbd.hasBeanClass() || !mbd.isLazyInit() || isAllowEagerClassLoading()) &&
 									!requiresEagerInitForType(mbd.getFactoryBeanName()))) {
+						// 判断当前bean是否实现了FactoryBean接口
 						boolean isFactoryBean = isFactoryBean(beanName, mbd);
+						// 根据RootBeanDefinition来获取BeanDefinitinHolder对象
 						BeanDefinitionHolder dbd = mbd.getDecoratedDefinition();
 						boolean matchFound = false;
 						boolean allowFactoryBeanInit = (allowEagerInit || containsSingleton(beanName));
@@ -933,7 +948,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 			// 判断当前bean不是抽象的并且是单例非懒加载的
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
-				// 判断是工厂bean
+				// 判断是否实现了FactoryBean接口
 				if (isFactoryBean(beanName)) {
 					// 根据&beanName来获取具体的对象
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);

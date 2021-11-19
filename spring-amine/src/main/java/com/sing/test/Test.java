@@ -1,17 +1,9 @@
 package com.sing.test;
 
-import com.mybatis.SingMapperFactoryBean;
-import com.mybatis.mapper.UserMapper;
 import com.sing.app.Appconfig;
-import com.sing.beanFactoryPostProcessor.TestBfp;
-import com.sing.service.IndexService;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import java.nio.file.Files;
 
 public class Test {
 
@@ -23,10 +15,10 @@ public class Test {
 	// }
 
 	public static void main(String[] args) {
-		ClassPathXmlApplicationContext applicationContext1 = new ClassPathXmlApplicationContext("spring.xml");
+		// ClassPathXmlApplicationContext applicationContext1 = new ClassPathXmlApplicationContext("spring.xml");
  		 AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		// applicationContext.register(Appconfig.class);
-		// applicationContext.refresh();
+		 applicationContext.register(Appconfig.class);
+		 applicationContext.refresh();
 		// IndexService indexService = applicationContext.getBean(IndexService.class);
 		// indexService.test();
 // 		System.out.println(applicationContext.getBean("userMapper"));

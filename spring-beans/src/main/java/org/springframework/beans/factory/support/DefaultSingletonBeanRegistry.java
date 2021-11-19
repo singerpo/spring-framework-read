@@ -210,25 +210,27 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		// Quick check for existing instance without full singleton lock
 		// 尝试从单例缓存中获取
 		Object singletonObject = this.singletonObjects.get(beanName);
-		// 单例对象是否null
-		// 这个 beanName 是否正在创建
+		// 单例对象为空且这个 beanName正在创建中
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
-			// 从延迟加载的map中获取（二级缓存）
+			// 从二级缓存中获取（这里的对象都是通过提前曝光(三级缓存中)的ObjectFactory创建出来的，还未进行属性填充等操作）
 			singletonObject = this.earlySingletonObjects.get(beanName);
-			// 对象是否空，是否允许提前引用
+			// 如果一级、二级缓存中没有，且允许创建早期单例对象引用
 			if (singletonObject == null && allowEarlyReference) {
+				// 锁定全局变量进行处理
 				synchronized (this.singletonObjects) {
 					// Consistent creation of early reference within full singleton lock
 					singletonObject = this.singletonObjects.get(beanName);
 					if (singletonObject == null) {
 						singletonObject = this.earlySingletonObjects.get(beanName);
 						if (singletonObject == null) {
-							// 从对象工厂 map 中获取对象工厂
+							// 从三级缓存中获取对象工厂
 							ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 							if (singletonFactory != null) {
-								// 对象获取后设置（放入二级缓存，移除三级缓存）
-								singletonObject = singletonFactory.getObject();//执行lamda表达式，aop
+								// 如果存在单例对象工厂，则通过工厂创建一个单例对象（执行lamda表达式，aop）
+								singletonObject = singletonFactory.getObject();
+								// 放入二级缓存
 								this.earlySingletonObjects.put(beanName, singletonObject);
+								// 从三级缓存移除
 								this.singletonFactories.remove(beanName);
 							}
 						}

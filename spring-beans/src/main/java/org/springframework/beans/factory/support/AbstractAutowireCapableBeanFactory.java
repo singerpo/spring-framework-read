@@ -182,6 +182,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			this.instantiationStrategy = new SimpleInstantiationStrategy();
 		}
 		else {
+			//bean的生成策略，默认是cglib
 			this.instantiationStrategy = new CglibSubclassingInstantiationStrategy();
 		}
 	}
@@ -495,16 +496,18 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Make sure bean class is actually resolved at this point, and
 		// clone the bean definition in case of a dynamically resolved Class
 		// which cannot be stored in the shared merged bean definition.
-		// 判断需要创建的 bean 是否可实例化，是否可以通过当前的类加载器加载
+		// 锁定class,根据设置的BeanClass来解析class
 		Class<?> resolvedClass = resolveBeanClass(mbd, beanName);
 		if (resolvedClass != null && !mbd.hasBeanClass() && mbd.getBeanClassName() != null) {
+			// 重新创建一个RootBeanDefinition对象
 			mbdToUse = new RootBeanDefinition(mbd);
+			// 设置BeanClass属性值
 			mbdToUse.setBeanClass(resolvedClass);
 		}
 
 		// Prepare method overrides.
 		try {
-			// 校验和准备 bean 中的方法覆盖
+			// 校验和准备 bean 中的方法覆盖，当需要创建的bean包含了lookup-method,replace-method标签的时候，会产生覆盖操作
 			mbdToUse.prepareMethodOverrides();
 		}
 		catch (BeanDefinitionValidationException ex) {
@@ -1204,9 +1207,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	protected BeanWrapper createBeanInstance(String beanName, RootBeanDefinition mbd, @Nullable Object[] args) {
 		// Make sure bean class is actually resolved at this point.
-		// 检查确认 bean 是可实例化的
+		// 解析BeanClass为Class
 		Class<?> beanClass = resolveBeanClass(mbd, beanName);
 
+		// 确保class不为空，并且访问权限是public
 		if (beanClass != null && !Modifier.isPublic(beanClass.getModifiers()) && !mbd.isNonPublicAccessAllowed()) {
 			throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 					"Bean class isn't public, and non-public access not allowed: " + beanClass.getName());
@@ -1372,7 +1376,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			else {
 				/**
 				 * !!!!!!!!!!!!！！！！！！！！！
-				 * 使用初始化策略实例化 bean 对象
+				 * 获取实例化策略进行实例化操作
 				 * !!!!!!!!!!!!！！！！！！！！！
 				 */
 				beanInstance = getInstantiationStrategy().instantiate(mbd, beanName, this);

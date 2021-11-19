@@ -308,7 +308,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			}
 			// 判断当前BeanDefiniton是否是一个配置类，并为BeanDefinition设置为lite或者full，此处设置属性值是为后续进行调用
 			// 如果Configuration配置proxyBeanMethods代理为true则为full
-			// 如果配置类上被@Order主机标注，则设置BeanDefinition的order属性值
+			// 如果配置类上被@Order注解标注，则设置BeanDefinition的order属性值
 			else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
 				// 添加到对应的集合对象中
 				configCandidates.add(new BeanDefinitionHolder(beanDef, beanName));

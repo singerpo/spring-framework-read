@@ -1,6 +1,5 @@
 package com.face.singleton;
 
-import org.springframework.validation.annotation.Validated;
 
 /**
  * 懒汉式-同步代码块-双重检查
