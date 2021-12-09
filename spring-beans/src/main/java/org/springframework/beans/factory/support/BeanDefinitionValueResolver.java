@@ -119,7 +119,7 @@ class BeanDefinitionValueResolver {
 			 */
 			return resolveReference(argName, ref);
 		}
-		// 对属性值是引用容器中另一个 bean 名称的解析
+		// 对属性值是引用容器中另一个 bean 名称的解析（对应于<idref bean=""/>）
 		else if (value instanceof RuntimeBeanNameReference) {
 			String refName = ((RuntimeBeanNameReference) value).getBeanName();
 			refName = String.valueOf(doEvaluate(refName));
@@ -224,6 +224,7 @@ class BeanDefinitionValueResolver {
 		else if (value instanceof TypedStringValue) {
 			// Convert value to target type here.
 			TypedStringValue typedStringValue = (TypedStringValue) value;
+			// 在typedStringValue封装的value可解析成表达式的情况下，将typedStringValue封装的value评估为表达式并解析出表达式的值
 			Object valueObject = evaluate(typedStringValue);
 			try {
 				// 获取属性的目标类型
@@ -302,6 +303,7 @@ class BeanDefinitionValueResolver {
 	 */
 	@Nullable
 	private Object doEvaluate(@Nullable String value) {
+		// 评估value,如果value是可解析表达式，会对其进行解析，否则直接返回value
 		return this.beanFactory.evaluateBeanDefinitionString(value, this.beanDefinition);
 	}
 

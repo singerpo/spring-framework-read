@@ -642,6 +642,7 @@ public abstract class BeanUtils {
 	 */
 	public static boolean isSimpleProperty(Class<?> type) {
 		Assert.notNull(type, "'type' must not be null");
+		// 如果type是"简单"值类型 || （type是数组 && type的元素类型是"简单"值类型
 		return isSimpleValueType(type) || (type.isArray() && isSimpleValueType(type.getComponentType()));
 	}
 

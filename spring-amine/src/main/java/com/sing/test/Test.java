@@ -19,6 +19,7 @@ public class Test {
  		 AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		 applicationContext.register(Appconfig.class);
 		 applicationContext.refresh();
+		 // applicationContext.close();
 		// IndexService indexService = applicationContext.getBean(IndexService.class);
 		// indexService.test();
 // 		System.out.println(applicationContext.getBean("userMapper"));

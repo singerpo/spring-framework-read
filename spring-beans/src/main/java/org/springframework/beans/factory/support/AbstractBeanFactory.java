@@ -451,10 +451,14 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	@SuppressWarnings("unchecked")
 	<T> T adaptBeanInstance(String name, Object bean, @Nullable Class<?> requiredType) {
 		// Check if required type matches the type of the actual bean instance.
+		// 检查requiredType是否与实际bean实例的类型匹配
+		// 如果requiredType不为null且bean不是requiredType的实例
 		if (requiredType != null && !requiredType.isInstance(bean)) {
 			try {
+				// 获取此BeanFactory使用的类型转换器，将bean转换为requiredType
 				Object convertedBean = getTypeConverter().convertIfNecessary(bean, requiredType);
 				if (convertedBean == null) {
+					// 抛出bean不是必须类型的异常
 					throw new BeanNotOfRequiredTypeException(name, requiredType, bean.getClass());
 				}
 				return (T) convertedBean;
@@ -470,9 +474,16 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		return (T) bean;
 	}
 
+	/**
+	 * 该bean工厂是否包含具体给定名称的bean定义或外部注册的singleton实例
+	 * @param name the name of the bean to query
+	 * @return
+	 */
 	@Override
 	public boolean containsBean(String name) {
 		String beanName = transformedBeanName(name);
+		// 如果beanName存在于一级缓存singletonObjects中
+		// 或者存在于beanDefinitonMap
 		if (containsSingleton(beanName) || containsBeanDefinition(beanName)) {
 			return (!BeanFactoryUtils.isFactoryDereference(name) || isFactoryBean(name));
 		}
@@ -1717,7 +1728,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 */
 	@Nullable
 	protected Object evaluateBeanDefinitionString(@Nullable String value, @Nullable BeanDefinition beanDefinition) {
-		// 占位符解析
+		// 如果该工厂没有设置占位符解析器
 		if (this.beanExpressionResolver == null) {
 			return value;
 		}
@@ -1727,11 +1738,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			// 获取 scope
 			String scopeName = beanDefinition.getScope();
 			if (scopeName != null) {
-				// scope 转换成接口值
+				// 获取scopeName对应的Scope对象
 				scope = getRegisteredScope(scopeName);
 			}
 		}
-		// 返回对象
+		// 评估value作为表达式（如果适用），否则按原样返回值
 		return this.beanExpressionResolver.evaluate(value, new BeanExpressionContext(this, scope));
 	}
 
@@ -2028,6 +2039,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @see org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor
 	 */
 	protected boolean requiresDestruction(Object bean, RootBeanDefinition mbd) {
+		// DestructionAwareBeanPostProcessor:该处理器将在用户关闭时应用于单例bean
+		// 如果bean类不是NullBean && (如果bean有destroy方法 || (该工厂持有DestructionAwareBeanPostProcessor && bean有应用于它的可识别销毁的后处理器) )就为true
 		return (bean.getClass() != NullBean.class && (DisposableBeanAdapter.hasDestroyMethod(bean, mbd) ||
 				(hasDestructionAwareBeanPostProcessors() && DisposableBeanAdapter.hasApplicableProcessors(
 						bean, getBeanPostProcessorCache().destructionAware))));
@@ -2046,21 +2059,29 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @see #registerDependentBean
 	 */
 	protected void registerDisposableBeanIfNecessary(String beanName, Object bean, RootBeanDefinition mbd) {
+		// 如果有安全管理器，获取其访问控制上下文
 		AccessControlContext acc = (System.getSecurityManager() != null ? getAccessControlContext() : null);
+		// 如果mbd不是prototype作用域 && bean在关闭时需要销毁
 		if (!mbd.isPrototype() && requiresDestruction(bean, mbd)) {
+			// 如果mbd是单例作用域
 			if (mbd.isSingleton()) {
 				// Register a DisposableBean implementation that performs all destruction
 				// work for the given bean: DestructionAwareBeanPostProcessors,
 				// DisposableBean interface, custom destroy method.
+				// 注册一个一次性bean实现来执行给定bean的销毁工作：DestructionAwareBeanPostProcessors 一次性bean接口，自定义销毁方法,
+				// DisposableBeanAdapter：实际一次性beanName和可运行接口适配器，对给定bean实例执行各种销毁步骤
+				// 构建bean对应的DisposableBeanAdapter对象，与beanName绑定到 注册中心的一次性bean列表中
 				registerDisposableBean(beanName, new DisposableBeanAdapter(
 						bean, beanName, mbd, getBeanPostProcessorCache().destructionAware, acc));
 			}
 			else {
 				// A bean with a custom scope...
+				// 获取mbd用户自定义的作用域
 				Scope scope = this.scopes.get(mbd.getScope());
 				if (scope == null) {
 					throw new IllegalStateException("No Scope registered for scope name '" + mbd.getScope() + "'");
 				}
+				// 注册一个回调，在销毁作用域中构建bean对应的DisPosableBeanAdapter对象（在销毁整个作用域时执行）
 				scope.registerDestructionCallback(beanName, new DisposableBeanAdapter(
 						bean, beanName, mbd, getBeanPostProcessorCache().destructionAware, acc));
 			}

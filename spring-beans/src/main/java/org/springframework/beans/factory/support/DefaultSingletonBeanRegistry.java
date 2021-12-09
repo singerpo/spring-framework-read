@@ -162,6 +162,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 */
 	protected void addSingleton(String beanName, Object singletonObject) {
 		synchronized (this.singletonObjects) {
+			//
 			this.singletonObjects.put(beanName, singletonObject);
 			this.singletonFactories.remove(beanName);
 			this.earlySingletonObjects.remove(beanName);
@@ -185,7 +186,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				this.singletonFactories.put(beanName, singletonFactory);
 				// (从二级缓存）删除单例beanName
 				this.earlySingletonObjects.remove(beanName);
-				// 注册单例 beanName
+				// 添加到已注册
 				this.registeredSingletons.add(beanName);
 			}
 		}
@@ -454,6 +455,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
+	 * 注册beanName与dependentBeanNamed的依赖关系
 	 * Register a dependent bean for the given bean,
 	 * to be destroyed before the given bean is destroyed.
 	 * @param beanName the name of the bean
@@ -568,13 +570,18 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 			disposableBeanNames = StringUtils.toStringArray(this.disposableBeans.keySet());
 		}
 		for (int i = disposableBeanNames.length - 1; i >= 0; i--) {
+			// 先销毁依赖于disposableBeanNames[i]的bean,然后再销毁bean
 			destroySingleton(disposableBeanNames[i]);
 		}
 
+		// 清空包含的bean名称之间的映射：bean名称-bean包含的bean名称集合
 		this.containedBeanMap.clear();
+		// 清空bean名称所依赖的bean之间的映射：bean名称-bean所依赖的bean名称集合
 		this.dependentBeanMap.clear();
+		//  清空bean名称与依赖于该bean之间的映射：bean名称-依赖于该bean的bean名称集合
 		this.dependenciesForBeanMap.clear();
 
+		// 清空注册表中所有的单例相关缓存
 		clearSingletonCache();
 	}
 

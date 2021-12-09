@@ -16,6 +16,8 @@ public class  ExtendBeanFactoryPostProcessor implements BeanFactoryPostProcessor
         // GenericBeanDefinition xxService = (GenericBeanDefinition) beanFactory.getBeanDefinition("xxService");
         // //扩展之后xxService消失掉，yyService成为spring bean
         // xxService.setBeanClass(yyService.class);
+		//xxService.setInstanceSupplier();
+
 
 		RootBeanDefinition rootBeanDefinition = new RootBeanDefinition(TestBfp.class);
 		BeanDefinitionRegistry beanDefinitionRegistry = (BeanDefinitionRegistry)beanFactory;

@@ -88,6 +88,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 			@Nullable Constructor<?> ctor, Object... args) {
 
 		// Must generate CGLIB subclass...
+		// 必须生成一个CGLIB子类
 		return new CglibSubclassCreator(bd, owner).instantiate(ctor, args);
 	}
 

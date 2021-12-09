@@ -407,6 +407,7 @@ final class PostProcessorRegistrationDelegate {
 
 
 	/**
+	 * 当前bean在BeanPostProcessor实例化过程中被创建时，即当前一个bean不适合被所有beanPostProcessor处理时，记录一个信息消息
 	 * BeanPostProcessor that logs an info message when a bean is created during
 	 * BeanPostProcessor instantiation, i.e. when a bean is not eligible for
 	 * getting processed by all BeanPostProcessors.
@@ -415,8 +416,10 @@ final class PostProcessorRegistrationDelegate {
 
 		private static final Log logger = LogFactory.getLog(BeanPostProcessorChecker.class);
 
+		// 当前bean工厂
 		private final ConfigurableListableBeanFactory beanFactory;
 
+		// BeanPostProcessor目标数量
 		private final int beanPostProcessorTargetCount;
 
 		public BeanPostProcessorChecker(ConfigurableListableBeanFactory beanFactory, int beanPostProcessorTargetCount) {

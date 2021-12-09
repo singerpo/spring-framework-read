@@ -67,7 +67,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 			Constructor<?> constructorToUse;
 			// 锁定对象，使获得实例化构造方法线程安全
 			synchronized (bd.constructorArgumentLock) {
-				// 获取对象的构造方法
+				// 查看bd对象是否含有构造方法
 				constructorToUse = (Constructor<?>) bd.resolvedConstructorOrFactoryMethod;
 				// 如果前面没有获取构造方法，则通过反射获取
 				if (constructorToUse == null) {
@@ -124,6 +124,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 	public Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner,
 			final Constructor<?> ctor, Object... args) {
 
+		// 检查bdd对象是否有MethodOverde对象，没有的话则直接实例化对象
 		if (!bd.hasMethodOverrides()) {
 			if (System.getSecurityManager() != null) {
 				// use own privileged to change accessibility (when security is on)
@@ -132,9 +133,11 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					return null;
 				});
 			}
+			// 通过反射实例化对象
 			return BeanUtils.instantiateClass(ctor, args);
 		}
 		else {
+			// 如果有MethodOverride对象，则调用方法来进行实现
 			return instantiateWithMethodInjection(bd, beanName, owner, ctor, args);
 		}
 	}
@@ -156,6 +159,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 			@Nullable Object factoryBean, final Method factoryMethod, Object... args) {
 
 		try {
+			// 是否包含系统安全管理器
 			if (System.getSecurityManager() != null) {
 				AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
 					ReflectionUtils.makeAccessible(factoryMethod);
@@ -163,12 +167,16 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 				});
 			}
 			else {
+				// 通过反射工具类设置访问权限
 				ReflectionUtils.makeAccessible(factoryMethod);
 			}
 
+			// 获取原有的Method对象
 			Method priorInvokedFactoryMethod = currentlyInvokedFactoryMethod.get();
 			try {
+				// 设置当前的Method
 				currentlyInvokedFactoryMethod.set(factoryMethod);
+				// 使用factoryMethod实例化对象
 				Object result = factoryMethod.invoke(factoryBean, args);
 				if (result == null) {
 					result = new NullBean();
@@ -176,6 +184,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 				return result;
 			}
 			finally {
+				// 实例化完成后恢复现场
 				if (priorInvokedFactoryMethod != null) {
 					currentlyInvokedFactoryMethod.set(priorInvokedFactoryMethod);
 				}
