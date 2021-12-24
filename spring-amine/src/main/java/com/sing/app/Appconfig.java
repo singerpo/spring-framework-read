@@ -18,17 +18,17 @@ import java.io.InputStream;
 @EnableAspectJAutoProxy
 @Configuration
 public class Appconfig {
-	@Bean
-	@Qualifier("userServiceQ")
-	public UserService userService1(){
-		return  new UserService("1");
-	}
-
-	@Bean
-	@Primary
-	public UserService userService2(){
-		return  new UserService("2");
-	}
+	// @Bean
+	// @Qualifier("userServiceQ")
+	// public UserService userService1(){
+	// 	return  new UserService("1");
+	// }
+	//
+	// @Bean
+	// @Primary
+	// public UserService userService2(){
+	// 	return  new UserService("2");
+	// }
 
 	@Bean
 	public SqlSessionFactory sqlSessionFactory() throws IOException {

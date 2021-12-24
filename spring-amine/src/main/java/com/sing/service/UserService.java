@@ -24,5 +24,9 @@ public class UserService {
 		// System.out.println("UserService Constructor");
 	}
 
+	public void test(){
+		// System.out.println(" UserService test");
+	}
+
 
 }

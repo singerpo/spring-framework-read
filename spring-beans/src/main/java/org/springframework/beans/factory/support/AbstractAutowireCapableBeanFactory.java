@@ -518,6 +518,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
 			// 【第一次调用后置处理器】如果 bean 配置了后置处理器 PostProcessor,则这里返回一个 proxy 代理对象
+			//InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation
+			// 如果开启aop,则会创建aop相关的advisor
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -1532,7 +1534,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				// 尝试获取mbd的PropertyValues
 				pvs = mbd.getPropertyValues();
 			}
-			// 遍历工厂内的所有InstantiationAwareBeanPostProcessor
+			// 【第六次调用后置处理器】遍历工厂内的所有InstantiationAwareBeanPostProcessor
 			for (InstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().instantiationAware) {
 				// postProcessProperties:在工厂将给定的属性值应用到给定bean之前，对它们进行后处理
 				// （AutowiredAnnotationBeanPostProcessor、CommonAnnotationBeanPostProcessor进行注解赋值）
@@ -1543,7 +1545,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 						// 从bw提取一组经过筛选的PropertyDescriptor,排除忽略的依赖项或忽略项上的定义的属性
 						filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
 					}
-					// 【第六次调用后置处理器】使用 BeanProcessor 处理器处理属性值
+					// 使用 BeanProcessor 处理器处理属性值
 					pvsToUse = bp.postProcessPropertyValues(pvs, filteredPds, bw.getWrappedInstance(), beanName);
 					if (pvsToUse == null) {
 						return;

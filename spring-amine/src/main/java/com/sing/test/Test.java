@@ -1,6 +1,7 @@
 package com.sing.test;
 
 import com.sing.app.Appconfig;
+import com.sing.service.IndexService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

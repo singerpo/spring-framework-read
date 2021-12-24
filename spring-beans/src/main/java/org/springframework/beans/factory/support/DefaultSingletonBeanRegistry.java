@@ -192,6 +192,18 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		}
 	}
 
+	/**
+	 * 2012-12-11 我自己用来测试二级缓存
+	 * @param beanName
+	 * @param bean
+	 */
+	protected void addEarlySingleton(String beanName, Object bean){
+		this.earlySingletonObjects.put(beanName,bean);
+		this.singletonFactories.remove(beanName);
+		this.registeredSingletons.add(beanName);
+	}
+
+
 	@Override
 	@Nullable
 	public Object getSingleton(String beanName) {

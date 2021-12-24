@@ -64,10 +64,13 @@ public abstract class AopNamespaceUtils {
 
 	public static void registerAspectJAutoProxyCreatorIfNecessary(
 			ParserContext parserContext, Element sourceElement) {
-
+		// 注册名为org.springframework.aop.config.internalAutoProxyCreater的beanDefinition,其中class类为"AspectJAwareAdvisorAutoProxyCreator"
 		BeanDefinition beanDefinition = AopConfigUtils.registerAspectJAutoProxyCreatorIfNecessary(
 				parserContext.getRegistry(), parserContext.extractSource(sourceElement));
+		// 如果指定proxy-target-class=true,则使用CGLIB代理，否则使用JDK代理
+		// 其实为AspectJAwareAdvisorAutoProxyCreater类的proxyTargetClass属性
 		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);
+		// 注册到Spring的bean工厂中，再次校验是否已注册
 		registerComponentIfNecessary(beanDefinition, parserContext);
 	}
 
@@ -82,10 +85,14 @@ public abstract class AopNamespaceUtils {
 
 	private static void useClassProxyingIfNecessary(BeanDefinitionRegistry registry, @Nullable Element sourceElement) {
 		if (sourceElement != null) {
+			// 处理proxy-target-class属性
+			//SpringAOP部分使用JDK动态代理或者CGLIB来为目标创建代理，如果被代理的目标对象实现了至少一个接口，则会使用JDK动态代理。若该目标对象没有
+			//实现任何接口，则使用CGLIB代理
 			boolean proxyTargetClass = Boolean.parseBoolean(sourceElement.getAttribute(PROXY_TARGET_CLASS_ATTRIBUTE));
 			if (proxyTargetClass) {
 				AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);
 			}
+			// 处理expose-proxy属性的处理
 			boolean exposeProxy = Boolean.parseBoolean(sourceElement.getAttribute(EXPOSE_PROXY_ATTRIBUTE));
 			if (exposeProxy) {
 				AopConfigUtils.forceAutoProxyCreatorToExposeProxy(registry);

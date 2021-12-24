@@ -11,7 +11,7 @@ import javax.annotation.PostConstruct;
 @Service
 public class IndexService implements InitializingBean {
 	@Autowired
-	@Qualifier("userServiceQ")
+	// @Qualifier("userServiceQ")
 	UserService userService;
 	// @Autowired
 	// OrderMapper orderMapper;
