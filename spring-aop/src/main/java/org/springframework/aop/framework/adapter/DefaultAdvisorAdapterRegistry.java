@@ -43,7 +43,7 @@ public class DefaultAdvisorAdapterRegistry implements AdvisorAdapterRegistry, Se
 	private final List<AdvisorAdapter> adapters = new ArrayList<>(3);
 
 
-	/**
+	/** 此方法把已有的advice实现的adapter加入进来
 	 * Create a new DefaultAdvisorAdapterRegistry, registering well-known adapters.
 	 */
 	public DefaultAdvisorAdapterRegistry() {
@@ -55,9 +55,11 @@ public class DefaultAdvisorAdapterRegistry implements AdvisorAdapterRegistry, Se
 
 	@Override
 	public Advisor wrap(Object adviceObject) throws UnknownAdviceTypeException {
+		// 如果要封装的对象本身就是Advisor类型，那么无须做任何处理
 		if (adviceObject instanceof Advisor) {
 			return (Advisor) adviceObject;
 		}
+		// 如果类型不是Advisor和Advice两种类型 ，那么抛出异常
 		if (!(adviceObject instanceof Advice)) {
 			throw new UnknownAdviceTypeException(adviceObject);
 		}

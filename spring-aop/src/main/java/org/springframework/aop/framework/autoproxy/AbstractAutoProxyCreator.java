@@ -347,16 +347,16 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		}
 
 		// Create proxy if we have advice.
-		// 增强方法获取
+		// 获取当前bean的Advices和Advisors
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
-		// 增强方法不为空
+		// 增强方法不为空，则需要进行代理
 		if (specificInterceptors != DO_NOT_PROXY) {
-			// 向代理集合中插入值
+			// 对当前bean的代理状态进行缓存
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
 			// 创建代理
 			Object proxy = createProxy(
 					bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
-			// 代理类型
+			// 缓存生成的代理类型
 			this.proxyTypes.put(cacheKey, proxy.getClass());
 			return proxy;
 		}
@@ -450,12 +450,16 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	protected Object createProxy(Class<?> beanClass, @Nullable String beanName,
 			@Nullable Object[] specificInterceptors, TargetSource targetSource) {
 
+		// 给bean定义设置暴露属性
 		if (this.beanFactory instanceof ConfigurableListableBeanFactory) {
 			AutoProxyUtils.exposeTargetClass((ConfigurableListableBeanFactory) this.beanFactory, beanName, beanClass);
 		}
 
+		// 创建代理工厂
 		ProxyFactory proxyFactory = new ProxyFactory();
+		// 获取当前类中相关属性
 		proxyFactory.copyFrom(this);
+
 
 		if (proxyFactory.isProxyTargetClass()) {
 			// Explicit handling of JDK proxy targets (for introduction advice scenarios)
@@ -470,6 +474,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			// No proxyTargetClass flag enforced, let's apply our default checks...
 			// 判断是使用Jdk动态代理 还是cglib代理
 			if (shouldProxyTargetClass(beanClass, beanName)) {
+				// cglib代理
 				proxyFactory.setProxyTargetClass(true);
 			}
 			else {
@@ -478,12 +483,12 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			}
 		}
 
-		// 构建增强其
+		// 构建增强器
 		Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);
 		proxyFactory.addAdvisors(advisors);
 		// 设置到要代理的类
 		proxyFactory.setTargetSource(targetSource);
-		// 定制代理
+		// 定制代理（默认为空）
 		customizeProxyFactory(proxyFactory);
 
 		// 控制代理过程被配置之后，是否还允许修改通知，默认值是false
