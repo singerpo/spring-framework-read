@@ -2,6 +2,7 @@ package com.sing.test;
 
 import com.sing.app.Appconfig;
 import com.sing.service.IndexService;
+import com.sing.service.UserService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -16,13 +17,13 @@ public class Test {
 	// }
 
 	public static void main(String[] args) {
-		// ClassPathXmlApplicationContext applicationContext1 = new ClassPathXmlApplicationContext("spring.xml");
- 		 AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		 applicationContext.register(Appconfig.class);
-		 applicationContext.refresh();
+		ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring.xml");
+ 		//  AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		 // applicationContext.register(Appconfig.class);
+		 // applicationContext.refresh();
 		 // applicationContext.close();
-		// IndexService indexService = applicationContext.getBean(IndexService.class);
-		// indexService.test();
+		UserService userService = applicationContext.getBean(UserService.class);
+		userService.test();
 // 		System.out.println(applicationContext.getBean("userMapper"));
 // 		System.out.println(applicationContext.getBean("&userMapper"));
 // 		System.out.println(applicationContext.getBean("&testFactoryBean"));

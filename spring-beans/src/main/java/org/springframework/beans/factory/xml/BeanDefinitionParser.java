@@ -51,6 +51,7 @@ public interface BeanDefinitionParser {
 	 * @param parserContext the object encapsulating the current state of the parsing process;
 	 * provides access to a {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
 	 * @return the primary {@link BeanDefinition}
+	 * {@link org.springframework.aop.config.ConfigBeanDefinitionParser} for the {@code <aop:config>} tag.
 	 */
 	@Nullable
 	BeanDefinition parse(Element element, ParserContext parserContext);

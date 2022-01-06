@@ -30,13 +30,13 @@ public class Appconfig {
 	// 	return  new UserService("2");
 	// }
 
-	@Bean
-	public SqlSessionFactory sqlSessionFactory() throws IOException {
-		System.out.println("@Bean sqlSessionFactory");
-		String resource = "mybatis-config.xml";
-		InputStream inputStream = Resources.getResourceAsStream(resource);
-		SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-		return sqlSessionFactory;
-	}
+	// @Bean
+	// public SqlSessionFactory sqlSessionFactory() throws IOException {
+	// 	System.out.println("@Bean sqlSessionFactory");
+	// 	String resource = "mybatis-config.xml";
+	// 	InputStream inputStream = Resources.getResourceAsStream(resource);
+	// 	SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+	// 	return sqlSessionFactory;
+	// }
 
 }

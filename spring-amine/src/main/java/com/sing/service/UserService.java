@@ -25,7 +25,8 @@ public class UserService {
 	}
 
 	public void test(){
-		// System.out.println(" UserService test");
+		 System.out.println(" UserService test");
+		 // throw new NullPointerException();
 	}
 
 
