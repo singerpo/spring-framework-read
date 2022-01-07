@@ -205,10 +205,12 @@ class ConfigurationClassParser {
 		processConfigurationClass(new ConfigurationClass(reader, beanName), DEFAULT_EXCLUSION_FILTER);
 	}
 
+	// 根据Class和beanName解析
 	protected final void parse(Class<?> clazz, String beanName) throws IOException {
 		processConfigurationClass(new ConfigurationClass(clazz, beanName), DEFAULT_EXCLUSION_FILTER);
 	}
 
+	// 根据注解元数据和beanName解析
 	protected final void parse(AnnotationMetadata metadata, String beanName) throws IOException {
 		processConfigurationClass(new ConfigurationClass(metadata, beanName), DEFAULT_EXCLUSION_FILTER);
 	}
@@ -292,7 +294,7 @@ class ConfigurationClassParser {
 		}
 
 		// Process any @PropertySource annotations
-		// 处理属性资源文件，加了@PropertySource注解
+		// 如果配置类上加了@PropertySource注解，那么就解析加载properties文件，并将属性添加到Spring上下文中
 		for (AnnotationAttributes propertySource : AnnotationConfigUtils.attributesForRepeatable(
 				sourceClass.getMetadata(), PropertySources.class,
 				org.springframework.context.annotation.PropertySource.class)) {

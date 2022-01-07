@@ -367,7 +367,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		Set<ConfigurationClass> alreadyParsed = new HashSet<>(configCandidates.size());
 		do {
 			StartupStep processConfig = this.applicationStartup.start("spring.context.config-classes.parse");
-			// 解析配置类，在此处会解析配置类上的注解（@ComponetScan扫描的类、@Import注册的类、@Bean方法定义的类）
+			// 解析配置类，在此处会解析配置类上的注解（@ComponetScan[@ComponetScans]扫描的类、@Import[@ImportResource]注册的类、@Bean方法定义的类）
 			// 注意：这一步只会将添加了@Configuation注解以及通过CompoentScan注解扫描的类加入到BeanDefinitonMap中
 			// 通过其他注解（@Import,@Bean)的方式在parse()方法这一步并不会将其解析为BeanDefinition
 			// 真正实现是在this.reader.loadBeanDefinitions()方法中实现

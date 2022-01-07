@@ -684,7 +684,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 					setProxyContext = true;
 				}
 				// Get as late as possible to minimize the time we "own" the target, in case it comes from a pool...
-				//目标类原始普通对象
+				// 目标类原始普通对象
 				target = targetSource.getTarget();
 				Class<?> targetClass = (target != null ? target.getClass() : null);
 				// 从advised中获取配置好的Aop通知
