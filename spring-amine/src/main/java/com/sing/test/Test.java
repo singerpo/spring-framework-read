@@ -17,10 +17,10 @@ public class Test {
 	// }
 
 	public static void main(String[] args) {
-		// ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring.xml");
- 		 AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		 applicationContext.register(Appconfig.class);
-		 applicationContext.refresh();
+		ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring.xml");
+ 		//  AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		 // applicationContext.register(Appconfig.class);
+		 // applicationContext.refresh();
 		 // applicationContext.close();
 		UserService userService = applicationContext.getBean(UserService.class);
 		userService.test();
@@ -30,6 +30,5 @@ public class Test {
 // 		System.out.println(applicationContext.getBean("testFactoryBean"));
 // 		TestBfp testBfp = applicationContext.getBean(TestBfp.class);
 // 		testBfp.test();
-
 	}
 }

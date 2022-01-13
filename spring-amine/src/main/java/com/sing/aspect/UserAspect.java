@@ -28,7 +28,11 @@ public class UserAspect {
 	@Around("execution(public void com.sing.service.UserService.test())")
 	public void around (ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 		System.out.println(" UserService test around start");
-		proceedingJoinPoint.proceed();
+		try {
+			proceedingJoinPoint.proceed();
+		}catch (Exception e){
+			System.out.println(" UserService test around Throwing ");
+		}
 		System.out.println(" UserService test around end");
 	}
 	@After("execution(public void com.sing.service.UserService.test())")

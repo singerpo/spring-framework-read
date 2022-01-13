@@ -307,7 +307,8 @@ final class LogAdapter {
 
 		@Override
 		public boolean isDebugEnabled() {
-			return this.logger.isDebugEnabled();
+			return false;
+			// return this.logger.isDebugEnabled();
 		}
 
 		@Override

@@ -2,6 +2,7 @@ package com.sing.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -24,9 +25,10 @@ public class UserService {
 		// System.out.println("UserService Constructor");
 	}
 
+	@Transactional
 	public void test(){
 		 System.out.println(" UserService test");
-		 // throw new NullPointerException();
+		  // throw new NullPointerException();
 	}
 
 
