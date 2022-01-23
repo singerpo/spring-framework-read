@@ -25,7 +25,7 @@ public class UserService {
 		// System.out.println("UserService Constructor");
 	}
 
-	@Transactional
+	// @Transactional
 	public void test(){
 		 System.out.println(" UserService test");
 		  // throw new NullPointerException();

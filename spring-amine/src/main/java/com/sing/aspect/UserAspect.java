@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserAspect {
 
-
-
 	@Before("execution(public void com.sing.service.UserService.test())")
 	public void before (){
 		System.out.println(" UserService test before ");

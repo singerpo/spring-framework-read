@@ -579,7 +579,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			/**
 			 * ！！！！！！！！！！
 			 * 【里面第二次调用后置处理器】实例化bean对象
-			 * (根据执行bean使用对应的策略创建新的实例，如工厂方法、构造函数主动注入、简单初始化)
+			 * (根据执行bean使用对应的策略创建新的实例，如Supplier、FactoryMethod、构造函数注入、反射)
 			 * ！！！！！！！！！！
 			 */
 			instanceWrapper = createBeanInstance(beanName, mbd, args);

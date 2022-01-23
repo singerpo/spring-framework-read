@@ -140,17 +140,14 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 		 * ClassPathXmlApplicationContext 与 FileSystemXmlApplicationContext 在这里的调用出现分歧
 		 * 各自按不同的方式加载解析Resource资源，最后在具体的解析和BeanDefinition定位上又会殊途同归。
 		 */
-
-		// 获取存放了BeanDefintion 的所有 Resource,FileSystemXmlApplicationContext 类未对
-		// getConfigResources()进行重写，所以调用父类的，return null。
- 		// 而ClassPathXmlApplicationContext 对该方法进行了重写，返回设置的值
+		// (以Resource的方式获得配置文件的资源位置)
 		Resource[] configResources = getConfigResources();
 		if (configResources != null) {
 			// XmlBeanDefinitionReader 调用其父类 AbstractBeanDefinitionReader的方法加载 BeanDefintion
 			reader.loadBeanDefinitions(configResources);
 		}
-		// 调用父类 AbstractRefreshableConfigApplicationContext 的实现，
-		// 优先返回 FileSystemXmlApplicationContext 构造方法中调用 setConfiglocations()方法设置的资源
+
+		// 以String的形式获得配置文件的位置
 		String[] configLocations = getConfigLocations();
 		if (configLocations != null) {
 			// XmlBeanDefinitionReader 调用其父类 AbstractBeanDefinitionReader 的方法从配置位置加载 BeanDefinition

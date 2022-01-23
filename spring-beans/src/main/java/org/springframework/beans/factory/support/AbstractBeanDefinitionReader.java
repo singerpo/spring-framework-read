@@ -226,8 +226,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 			// Resource pattern matching available.
 			try {
 				// 将指定位置的BeanDefinition 资源文件解析为IoC 容器封装的资源
-				// 这里的getResources 从FileSystemXmlApplicationContext的继承体系可以明确，其走的是
-				// DefaultResourceLoader中的实现
+				// 走的实现是PathMatchingResourcePatternResolver
  				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
 				// 委派调用其子类 XmlBeanDefinitionReader 的方法，实现加载功能
 				int count = loadBeanDefinitions(resources);
@@ -245,11 +244,6 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 			}
 		}
 		else {
-			/**
-			 * AbstractApplicationContext 继承了 DefaultResourceLoader,所以 AbstractApplicationContext
-			 * 及其子类都会调用 DefaultResourceLoader 中的实现，将指定位置的资源文件解析为Resource,
-			 * 至此完成了对BeanDefinition 的资源定位。
-			 */
 			// Can only load single resources by absolute URL.
 			Resource resource = resourceLoader.getResource(location);
 			// 从 resource 中加载 BeanDefinition,loadCount 为加载 BeanDefiniton 个数

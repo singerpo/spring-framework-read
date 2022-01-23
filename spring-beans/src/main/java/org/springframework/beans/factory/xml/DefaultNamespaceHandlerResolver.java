@@ -115,7 +115,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	@Override
 	@Nullable
 	public NamespaceHandler  resolve(String namespaceUri) {
-		//读取解析META-INF/spring.schemas
+		//读取解析META-INF/spring.handlers
 		Map<String, Object> handlerMappings = getHandlerMappings();
 		// 根据命名空间找到对应的信息
 		Object handlerOrClassName = handlerMappings.get(namespaceUri);

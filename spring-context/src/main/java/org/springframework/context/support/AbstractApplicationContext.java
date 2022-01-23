@@ -623,6 +623,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				 *调用所有注册的BeanFactoryPostProcessor的Bean
 				 * 1.完成扫描将类解析为GenericBeanDefinition,放入到map里面
 				 * @see org.springframework.context.annotation.ConfigurationClassPostProcessor
+				 * @see PropertySourcesPlaceholderConfigurer
 				 */
 				invokeBeanFactoryPostProcessors(beanFactory);
 
@@ -645,7 +646,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
-				//留给子类来初始化其他的bean
+				// 默认没有任何实现，模板方法（但是在Spirng Boot 中启动了web容器）
 				onRefresh();
 
 				// Check for listener beans and register them.
@@ -688,6 +689,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			finally {
 				// Reset common introspection caches in Spring's core, since we
 				// might not ever need metadata for singleton beans anymore...
+				// 清除运行过程中产生的缓存
 				resetCommonCaches();
 				contextRefresh.end();
 			}

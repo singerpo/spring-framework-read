@@ -184,7 +184,7 @@ final class PostProcessorRegistrationDelegate {
 			// 如果beanFactory不是BeanDefinitionRegistry类型，那么直接执行postProcessBeanFactory方法
 			invokeBeanFactoryPostProcessors(beanFactoryPostProcessors, beanFactory);
 		}
-		// 到这里为止，入参beanFactoryPostProcessors和容器中所有的BeanDefinitionRegistryPostProcessor已经全部出了完毕
+		// 到这里为止，入参beanFactoryPostProcessors和容器中所有的BeanDefinitionRegistryPostProcessor已经全部执行完毕
 		// 下面开始处理容器中所有的BeanFactoryPostProcessor
 
 		// Do not initialize FactoryBeans here: We need to leave all regular beans
@@ -268,7 +268,7 @@ final class PostProcessorRegistrationDelegate {
 		// to ensure that your proposal does not result in a breaking change:
 		// https://github.com/spring-projects/spring-framework/issues?q=PostProcessorRegistrationDelegate+is%3Aclosed+label%3A%22status%3A+declined%22
 
-		//找到所有实现了BeanPostProcessors接口的类
+		// 找到所有实现了BeanPostProcessors接口的类
 		String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanPostProcessor.class, true, false);
 
 		// Register BeanPostProcessorChecker that logs an info message when
@@ -321,7 +321,6 @@ final class PostProcessorRegistrationDelegate {
 			}
 		}
 		sortPostProcessors(orderedPostProcessors, beanFactory);
-		//
 		registerBeanPostProcessors(beanFactory, orderedPostProcessors);
 
 		// Now, register all regular BeanPostProcessors.
