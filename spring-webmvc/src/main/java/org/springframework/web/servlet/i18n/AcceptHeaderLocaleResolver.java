@@ -95,19 +95,27 @@ public class AcceptHeaderLocaleResolver implements LocaleResolver {
 
 	@Override
 	public Locale resolveLocale(HttpServletRequest request) {
+		// 获取默认的语言环境
 		Locale defaultLocale = getDefaultLocale();
+		// 如果默认语言环境不为空且请求头'Accept-Language'为空,则返回默认的
 		if (defaultLocale != null && request.getHeader("Accept-Language") == null) {
 			return defaultLocale;
 		}
+		// 从请求中获取 Local 对象 'requestLocale'
 		Locale requestLocale = request.getLocale();
+		// 获取当前支持的supportedLocales集合
 		List<Locale> supportedLocales = getSupportedLocales();
+		// 如果支持的supportedLocales集合为空 或者 包含请求中的requestLococale,则返回请求中的语音环境
 		if (supportedLocales.isEmpty() || supportedLocales.contains(requestLocale)) {
 			return requestLocale;
 		}
+		// 从请求中的 Locale 们和支持的 Locale集合进行匹配
 		Locale supportedLocale = findSupportedLocale(request, supportedLocales);
+		// 如果匹配到了则直接返回匹配结果
 		if (supportedLocale != null) {
 			return supportedLocale;
 		}
+		// 默认的的 defaultLocale 不为空则直接返回，否则返回请求中获取的 requestLocale 对象
 		return (defaultLocale != null ? defaultLocale : requestLocale);
 	}
 

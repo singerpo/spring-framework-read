@@ -49,6 +49,7 @@ public interface ApplicationListener<E extends ApplicationEvent> extends EventLi
 	void onApplicationEvent(E event);
 
 
+
 	/**
 	 * Create a new {@code ApplicationListener} for the given payload consumer.
 	 * @param consumer the event payload consumer

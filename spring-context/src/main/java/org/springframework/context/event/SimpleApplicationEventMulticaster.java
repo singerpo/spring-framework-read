@@ -131,15 +131,25 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 		multicastEvent(event, resolveDefaultEventType(event));
 	}
 
+	/**
+	 * 广播事件
+	 * @param event the event to multicast
+	 * @param eventType the type of event (can be {@code null})
+	 */
 	@Override
 	public void multicastEvent(final ApplicationEvent event, @Nullable ResolvableType eventType) {
+		// 如果eventType不为null就引用eventType;否则将event转换为ResolvableType对象再引用
 		ResolvableType type = (eventType != null ? eventType : resolveDefaultEventType(event));
+		// 获取此多播器的当前任务线程池
 		Executor executor = getTaskExecutor();
+		// getApplicationListeners方法是返回与给定事件类型匹配的应用监听器集合
 		for (ApplicationListener<?> listener : getApplicationListeners(event, type)) {
 			if (executor != null) {
+				// 使用executor回调listener的onApplicaitonEvent方法，传入event
 				executor.execute(() -> invokeListener(listener, event));
 			}
 			else {
+				// 回调listener的onApplicaitonEvent方法，传入event
 				invokeListener(listener, event);
 			}
 		}
@@ -156,16 +166,19 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	 * @since 4.1
 	 */
 	protected void invokeListener(ApplicationListener<?> listener, ApplicationEvent event) {
+		//获取此多播器的当前错误处理程序
 		ErrorHandler errorHandler = getErrorHandler();
 		if (errorHandler != null) {
 			try {
 				doInvokeListener(listener, event);
 			}
 			catch (Throwable err) {
+				// 交给errorHandler接收处理err
 				errorHandler.handleError(err);
 			}
 		}
 		else {
+			// 回调listener的onApplicationEvent方法，传入event
 			doInvokeListener(listener, event);
 		}
 	}
@@ -173,9 +186,11 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private void doInvokeListener(ApplicationListener listener, ApplicationEvent event) {
 		try {
+			// 回调listener的onApplicationEvent方法，传入event
 			listener.onApplicationEvent(event);
 		}
 		catch (ClassCastException ex) {
+			// 获取异常信息
 			String msg = ex.getMessage();
 			if (msg == null || matchesClassCastMessage(msg, event.getClass()) ||
 					(event instanceof PayloadApplicationEvent &&
@@ -192,6 +207,7 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 				}
 			}
 			else {
+				// 抛出异常
 				throw ex;
 			}
 		}

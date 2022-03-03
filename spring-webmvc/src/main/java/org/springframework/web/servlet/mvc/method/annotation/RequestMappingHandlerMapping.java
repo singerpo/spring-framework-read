@@ -89,6 +89,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	@Nullable
 	private StringValueResolver embeddedValueResolver;
 
+	// RequestMappingInfo 的构建器
 	private RequestMappingInfo.BuilderConfiguration config = new RequestMappingInfo.BuilderConfiguration();
 
 
@@ -269,12 +270,15 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	@Override
 	@Nullable
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
+		// 基于方法上的 @RequestMapping 注解，创建 RequestMappingInfo 对象
 		RequestMappingInfo info = createRequestMappingInfo(method);
 		if (info != null) {
+			// 基于类上的 @RequestMapping 注解，合并进去
 			RequestMappingInfo typeInfo = createRequestMappingInfo(handlerType);
 			if (typeInfo != null) {
 				info = typeInfo.combine(info);
 			}
+			// 如果有前缀，则设置到 info 中
 			String prefix = getPathPrefix(handlerType);
 			if (prefix != null) {
 				info = RequestMappingInfo.paths(prefix).options(this.config).build().combine(info);
@@ -412,7 +416,9 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	@Override
 	public RequestMatchResult match(HttpServletRequest request, String pattern) {
 		Assert.isNull(getPatternParser(), "This HandlerMapping requires a PathPattern");
+		// 为 `pattern` 创建一个 RequestMappingInfo 对象
 		RequestMappingInfo info = RequestMappingInfo.paths(pattern).options(this.config).build();
+		// 获得请求对应的 RequestMappingInfo 对象
 		RequestMappingInfo match = info.getMatchingCondition(request);
 		return (match != null && match.getPatternsCondition() != null ?
 				new RequestMatchResult(

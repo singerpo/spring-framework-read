@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.lang.Nullable;
 
 /**
+ * 根据request找到响应的处理器handler和interceptors
  * Interface to be implemented by objects that define a mapping between
  * requests and handler objects.
  *
@@ -153,6 +154,7 @@ public interface HandlerMapping {
 	}
 
 	/**
+	 * 获取请求对应的处理器和拦截器
 	 * Return a handler and any interceptors for this request. The choice may be made
 	 * on request URL, session state, or any factor the implementing class chooses.
 	 * <p>The returned HandlerExecutionChain contains a handler Object, rather than

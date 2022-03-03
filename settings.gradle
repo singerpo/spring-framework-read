@@ -57,4 +57,5 @@ settings.gradle.projectsLoaded {
 	}
 }
 include 'spring-amine'
+include 'spring-amvc'
 

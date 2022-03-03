@@ -79,6 +79,9 @@ import org.springframework.web.util.WebUtils;
 public class CommonsMultipartResolver extends CommonsFileUploadSupport
 		implements MultipartResolver, ServletContextAware {
 
+	// 处理懒加载，如果为true，会将解析请求的操作放在DefaultMultipartHttpServletRequest的initializeMultipart方法中，
+	// 只有在实际调用的时候才会被调用
+	// 如果为false，那么会先调用parseRequest方法来处理request请求，然后将处理的结果放到DefaultMultipartHttpServletRequest
 	private boolean resolveLazily = false;
 
 	@Nullable
@@ -186,9 +189,13 @@ public class CommonsMultipartResolver extends CommonsFileUploadSupport
 	 * @throws MultipartException if multipart resolution failed.
 	 */
 	protected MultipartParsingResult parseRequest(HttpServletRequest request) throws MultipartException {
+		// 从请求中获取当前请求的编码
 		String encoding = determineEncoding(request);
+		// 按照请求的编码，获取一个FileUpload对象，装载到CommonsFileUploadSupport的property属性都会被装入这个对象中
+		// prepareFileUpload是继承自commonsFileUploadSupport的函数，会比较请求的编码和XML中配置的编码，如果不一样，会拒绝处理
 		FileUpload fileUpload = prepareFileUpload(encoding);
 		try {
+			// 对请求中的multipart文件进行具体的处理
 			List<FileItem> fileItems = ((ServletFileUpload) fileUpload).parseRequest(request);
 			return parseFileItems(fileItems, encoding);
 		}

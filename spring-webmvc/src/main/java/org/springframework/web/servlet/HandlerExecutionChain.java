@@ -44,8 +44,10 @@ public class HandlerExecutionChain {
 
 	private final Object handler;
 
+	// 拦截器集合
 	private final List<HandlerInterceptor> interceptorList = new ArrayList<>();
 
+	// 在triggerAfterCompletion方法中需要用到，用于倒序执行拦截器的方法
 	private int interceptorIndex = -1;
 
 
@@ -143,12 +145,16 @@ public class HandlerExecutionChain {
 	 * that this interceptor has already dealt with the response itself.
 	 */
 	boolean applyPreHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		// 遍历拦截器数组
 		for (int i = 0; i < this.interceptorList.size(); i++) {
 			HandlerInterceptor interceptor = this.interceptorList.get(i);
+			// 执行前置处理
 			if (!interceptor.preHandle(request, response, this.handler)) {
+				// 如果前置处理返回false,则触发执行afterCompletion方法(在view渲染完成后执行)
 				triggerAfterCompletion(request, response, null);
 				return false;
 			}
+			// 标记interceptorIndex位置
 			this.interceptorIndex = i;
 		}
 		return true;
@@ -172,12 +178,14 @@ public class HandlerExecutionChain {
 	 * has successfully completed and returned true.
 	 */
 	void triggerAfterCompletion(HttpServletRequest request, HttpServletResponse response, @Nullable Exception ex) {
+		// 遍历拦截器数组 倒序
 		for (int i = this.interceptorIndex; i >= 0; i--) {
 			HandlerInterceptor interceptor = this.interceptorList.get(i);
 			try {
 				interceptor.afterCompletion(request, response, this.handler, ex);
 			}
 			catch (Throwable ex2) {
+				// 如果执行失败，仅仅会打印错误日志，不会结束循环
 				logger.error("HandlerInterceptor.afterCompletion threw exception", ex2);
 			}
 		}

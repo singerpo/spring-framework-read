@@ -82,15 +82,18 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	protected final Log mappingsLogger =
 			LogDelegateFactory.getHiddenLog(HandlerMapping.class.getName() + ".Mappings");
 
-
+	// 默认处理器，使用的对象类型Object,子类实现的时候使用HandlerMethod,HandlerExecutionChain等
 	@Nullable
 	private Object defaultHandler;
 
+	// 路径匹配器
 	@Nullable
 	private PathPatternParser patternParser;
 
+	// url路径管理工具
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
 
+	// 基于ant进行path匹配，解决/user/{id}的场景
 	private PathMatcher pathMatcher = new AntPathMatcher();
 
 	private final List<Object> interceptors = new ArrayList<>();
@@ -376,8 +379,11 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	 */
 	@Override
 	protected void initApplicationContext() throws BeansException {
+		// 空实现，交给子类实现，用于注册自定义的拦截器到intercptors中，目前暂无子类实现
 		extendInterceptors(this.interceptors);
+		// 扫描已注册的MappedInterceptor的bean,添加到adaptedInterceptors
 		detectMappedInterceptors(this.adaptedInterceptors);
+		// 将interceptors初始化成 HandlerInterceptor类型，添加到adaptedInterceptors
 		initInterceptors();
 	}
 
@@ -403,6 +409,8 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	 * @param mappedInterceptors an empty list to add to
 	 */
 	protected void detectMappedInterceptors(List<HandlerInterceptor> mappedInterceptors) {
+		// 扫描已注册的MappedInterceptor的Bean,添加到mappedInterceptors中
+		// mappedInterceptors会根据请求路径做匹配，是否进行拦截
 		mappedInterceptors.addAll(BeanFactoryUtils.beansOfTypeIncludingAncestors(
 				obtainApplicationContext(), MappedInterceptor.class, true, false).values());
 	}
@@ -495,14 +503,18 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	@Override
 	@Nullable
 	public final HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+		// 获取处理器（HandlerMethod或者HandlerExecutionChain),该方法是抽象方法，由子类实现
 		Object handler = getHandlerInternal(request);
+		// 获取不到，则使用默认处理器
 		if (handler == null) {
 			handler = getDefaultHandler();
 		}
+		// 还是获取不到，则返回null
 		if (handler == null) {
 			return null;
 		}
 		// Bean name or resolved handler?
+		// 如果找到的处理器是String类型，则从Spring容器中找到对应的Bean作为处理器
 		if (handler instanceof String) {
 			String handlerName = (String) handler;
 			handler = obtainApplicationContext().getBean(handlerName);
@@ -513,6 +525,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 			initLookupPath(request);
 		}
 
+		// 创建HandlerExecutionChain对象（包含处理器和拦截器）
 		HandlerExecutionChain executionChain = getHandlerExecutionChain(handler, request);
 
 		if (logger.isTraceEnabled()) {
@@ -522,6 +535,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 			logger.debug("Mapped to " + executionChain.getHandler());
 		}
 
+		// 针对跨域请求的处理
 		if (hasCorsConfigurationSource(handler) || CorsUtils.isPreFlightRequest(request)) {
 			CorsConfiguration config = getCorsConfiguration(handler, request);
 			if (getCorsConfigurationSource() != null) {
@@ -604,13 +618,16 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 		HandlerExecutionChain chain = (handler instanceof HandlerExecutionChain ?
 				(HandlerExecutionChain) handler : new HandlerExecutionChain(handler));
 
+		// 遍历adaptedInterceptors数组，获取得请求匹配的拦截器
 		for (HandlerInterceptor interceptor : this.adaptedInterceptors) {
+			// 需要匹配，若路径匹配，则添加到chain中
 			if (interceptor instanceof MappedInterceptor) {
 				MappedInterceptor mappedInterceptor = (MappedInterceptor) interceptor;
 				if (mappedInterceptor.matches(request)) {
 					chain.addInterceptor(mappedInterceptor.getInterceptor());
 				}
 			}
+			// 无需匹配，则直接添加到chain中
 			else {
 				chain.addInterceptor(interceptor);
 			}
