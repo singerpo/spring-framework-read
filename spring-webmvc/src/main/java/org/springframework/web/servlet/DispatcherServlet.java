@@ -1098,7 +1098,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				// Determine handler adapter for the current request.
-				// 获得当前handler对应的HandlerAdapter对象
+				// 获得当前handler对应的HandlerAdapter对象(常用的是RequestMappingHandlerAdapter)
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
 				// Process last-modified header, if supported by the handler.
@@ -1122,7 +1122,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				// Actually invoke the handler.
-				// 真正的调用handler方法（也就是执行对应的方法，并返回视图）
+				// 真正的调用handler方法（也就是执行对应controller的方法，并返回ModelAndView）
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
 				// 如果需要异步处理，直接返回
