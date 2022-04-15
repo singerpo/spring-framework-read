@@ -422,6 +422,7 @@ public class MethodParameter {
 	}
 
 	/**
+	 * 返回{@code MethodParameter}的变体，该变体执行同一个参数但是在声明{@link java.util.Optional}的情况下，嵌套级别更深
 	 * Return a variant of this {@code MethodParameter} which points to
 	 * the same parameter but one nesting level deeper in case of a
 	 * {@link java.util.Optional} declaration.
@@ -430,6 +431,7 @@ public class MethodParameter {
 	 * @see #nested()
 	 */
 	public MethodParameter nestedIfOptional() {
+		// 获取当前的参数类型如果是Optional,返回同一个参数但是嵌套级别更深的变体
 		return (getParameterType() == Optional.class ? nested() : this);
 	}
 

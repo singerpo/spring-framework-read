@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.lang.Nullable;
 
 /**
+ * 此接口主要用来在redirect中传递参数
  * A strategy interface for retrieving and saving FlashMap instances.
  * See {@link FlashMap} for a general overview of flash attributes.
  *
@@ -32,6 +33,9 @@ import org.springframework.lang.Nullable;
 public interface FlashMapManager {
 
 	/**
+	 * 从session中获取所有flashMap,然后删除过期的flashMap,寻找匹配当前请求的flashMap,并将匹配上的flashMap也删除
+	 * flashMap中有失效时间、目标请求参数、目标请求路径
+	 * 该方法用于重定向后，获取flashMap,从而获取重新向前设置的参数
 	 * Find a FlashMap saved by a previous request that matches to the current
 	 * request, remove it from underlying storage, and also remove other
 	 * expired FlashMap instances.

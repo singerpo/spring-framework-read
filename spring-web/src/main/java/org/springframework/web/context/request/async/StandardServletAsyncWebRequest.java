@@ -119,7 +119,9 @@ public class StandardServletAsyncWebRequest extends ServletWebRequest implements
 		if (isAsyncStarted()) {
 			return;
 		}
+		// 创建AsyncContext对象
 		this.asyncContext = getRequest().startAsync(getRequest(), getResponse());
+		// 因为对象本身实现了AsyncListener接口，所以将自己添加为一个监听对象
 		this.asyncContext.addListener(this);
 		if (this.timeout != null) {
 			this.asyncContext.setTimeout(this.timeout);

@@ -395,11 +395,13 @@ public class ExceptionHandlerExceptionResolver extends AbstractHandlerMethodExce
 	protected ModelAndView doResolveHandlerMethodException(HttpServletRequest request,
 			HttpServletResponse response, @Nullable HandlerMethod handlerMethod, Exception exception) {
 
+		// 获得异常对应的 ServletInvocableHandlerMethod对象，handlerMethod是处理异常的方法
 		ServletInvocableHandlerMethod exceptionHandlerMethod = getExceptionHandlerMethod(handlerMethod, exception);
 		if (exceptionHandlerMethod == null) {
 			return null;
 		}
 
+		// 设置 ServletInvocalbeHandlerMethod对象的相关属性，主要是为了处理handlerMethod中方法的参数以及handlerMethod的返回值
 		if (this.argumentResolvers != null) {
 			exceptionHandlerMethod.setHandlerMethodArgumentResolvers(this.argumentResolvers);
 		}
@@ -407,7 +409,9 @@ public class ExceptionHandlerExceptionResolver extends AbstractHandlerMethodExce
 			exceptionHandlerMethod.setHandlerMethodReturnValueHandlers(this.returnValueHandlers);
 		}
 
+		// 创建ServletWebRequest对象
 		ServletWebRequest webRequest = new ServletWebRequest(request, response);
+		// 创建ModelAndViewContainer对象
 		ModelAndViewContainer mavContainer = new ModelAndViewContainer();
 
 		ArrayList<Throwable> exceptions = new ArrayList<>();
@@ -469,19 +473,24 @@ public class ExceptionHandlerExceptionResolver extends AbstractHandlerMethodExce
 	@Nullable
 	protected ServletInvocableHandlerMethod getExceptionHandlerMethod(
 			@Nullable HandlerMethod handlerMethod, Exception exception) {
-
+		// 处理器的类型
 		Class<?> handlerType = null;
 
+		// 如果handlerMethod非空，则先获得Controller对应的@ExceptionHander处理器对应的方法
 		if (handlerMethod != null) {
 			// Local exception handler methods on the controller class itself.
 			// To be invoked through the proxy, even in case of an interface-based proxy.
+			// 获得handlerType
 			handlerType = handlerMethod.getBeanType();
+			// 获得handlerType对应的ExceptionHandlerMethodResolver对象
 			ExceptionHandlerMethodResolver resolver = this.exceptionHandlerCache.get(handlerType);
 			if (resolver == null) {
 				resolver = new ExceptionHandlerMethodResolver(handlerType);
 				this.exceptionHandlerCache.put(handlerType, resolver);
 			}
+			// 获得异常对应的Method处理方法
 			Method method = resolver.resolveMethod(exception);
+			// 如果获得该异常对应的Mehtod处理方法，则创建ServletInvocableHandlerMethod对象，并返回
 			if (method != null) {
 				return new ServletInvocableHandlerMethod(handlerMethod.getBean(), method);
 			}

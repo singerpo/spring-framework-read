@@ -49,10 +49,13 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	private static final Object[] EMPTY_ARGS = new Object[0];
 
 
+	// 用于解析参数
 	private HandlerMethodArgumentResolverComposite resolvers = new HandlerMethodArgumentResolverComposite();
 
+	// 获取参数名，用于MethodParameter中
 	private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
+	// 可以创建WebDataBinder用于参数解析器ArgumentResolver中
 	@Nullable
 	private WebDataBinderFactory dataBinderFactory;
 
@@ -201,6 +204,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 			if (KotlinDetector.isSuspendingFunction(method)) {
 				return CoroutinesUtils.invokeSuspendingFunction(method, getBean(), args);
 			}
+			// 执行
 			return method.invoke(getBean(), args);
 		}
 		catch (IllegalArgumentException ex) {

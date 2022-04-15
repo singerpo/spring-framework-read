@@ -81,7 +81,7 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 
 	protected static final String HEADER_CACHE_CONTROL = "Cache-Control";
 
-
+	//设置支持的请求方法，默认支持get、post、head
 	/** Set of supported HTTP methods. */
 	@Nullable
 	private Set<String> supportedMethods;
@@ -89,11 +89,24 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 	@Nullable
 	private String allowHeader;
 
+	// 判断当前请求必须有session,如果此属性为true,但当前请求没有session将抛出HttpSessionRequiredException异常
 	private boolean requireSession = false;
 
 	@Nullable
 	private CacheControl cacheControl;
 
+	/**
+	 * 缓存过期时间，正数表示需要缓存，负数表示不做任何事情（也就是说保留上次的缓存设置）
+	 * 1.casheSeconds = 0时，则将设置如下响应头数据
+	 * 	Pragma:no-cache      	//HTTP1.0的不缓存响应头
+	 * 	Expires:1L			 	// useExpiresHeader=true时，HTTP1.0
+	 * 	Cache-Control:no-cache 	//useCacheControlHeader=true时，HTTP1.1
+	 * 	Cache-Control:no-store 	// useCacheControlNoStore=true时，该设置是防止Firefox缓存
+	 * 2.casheSeconds > 0时，则将设置如下响应头数据
+	 * 	Expires: System.currentTimeMillis() + cacheSeconds *1000L	// useExpiresHeader=true时，HTTP1.0
+	 * 	Cache-Control:max-age=cacheSeconds 							//useCacheControlHeader=true时，HTTP1.1
+	 * 3.casheSeconds < 0时，则什么都不设置，即保留上次的缓存设置
+	 */
 	private int cacheSeconds = -1;
 
 	@Nullable
@@ -102,12 +115,15 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 
 	// deprecated fields
 
+	// 是否使用HTTP1.0协议过去响应，如果是true则会在响应头添加Expires,需要配合cacheSeconds使用
 	/** Use HTTP 1.0 expires header? */
 	private boolean useExpiresHeader = false;
 
+	// 是否使用HTTP1.1协议的缓存控制响应头，如果true则会在响应头添加 Cache-Control ：max-age=cacheSeconds需要配合cacheSeconds使用
 	/** Use HTTP 1.1 cache-control header? */
 	private boolean useCacheControlHeader = true;
 
+	//是否使用HTTP1.1协议的缓存控制响应头，如果true则会在响应头添加Cache-Control:no-store需要配合cacheSeconds使用
 	/** Use HTTP 1.1 cache-control header value "no-store"? */
 	private boolean useCacheControlNoStore = true;
 

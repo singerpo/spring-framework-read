@@ -355,29 +355,43 @@ public abstract class ReflectionUtils {
 	 */
 	public static void doWithMethods(Class<?> clazz, MethodCallback mc, @Nullable MethodFilter mf) {
 		// Keep backing up the inheritance hierarchy.
+		// 从缓存中获取clazz的所有声明的方法，包括它的所有接口中的所有默认方法；没有则从{@code clazz}中获取，再添加到缓存中
 		Method[] methods = getDeclaredMethods(clazz, false);
+		// 遍历所有方法
 		for (Method method : methods) {
+			// 如果mf不为null 且 method 不满足mf的匹配要求
 			if (mf != null && !mf.matches(method)) {
 				continue;
 			}
 			try {
+				// 对method执行回调操作
 				mc.doWith(method);
 			}
 			catch (IllegalAccessException ex) {
 				throw new IllegalStateException("Not allowed to access method '" + method.getName() + "': " + ex);
 			}
 		}
+		// 如果clazz的父类不为null且（mf不是与未在{@code java.lang.Object}上声明的所有非桥接非合成方法匹配的预构建方法过滤器或者clazz的父类不为Object)
 		if (clazz.getSuperclass() != null && (mf != USER_DECLARED_METHODS || clazz.getSuperclass() != Object.class)) {
+			// 递归方法
+			// 执行给定回调操作在clazz的父类的所有匹配方法，
+			// 子类和父类发生的相同命名方法将出现两次，除非被mf排除掉
 			doWithMethods(clazz.getSuperclass(), mc, mf);
 		}
+		// 如果clazz是接口
 		else if (clazz.isInterface()) {
+			// 遍历clazz的所有接口
 			for (Class<?> superIfc : clazz.getInterfaces()) {
+				// 递归方法
+				// 执行给定回调操作在superIfc的所有匹配方法
+				// 子类和父类发生的相同命名方法将出现两次，除非被mf排除掉
 				doWithMethods(superIfc, mc, mf);
 			}
 		}
 	}
 
 	/**
+	 * 获取子类和其父类的所有声明方法，首先包括子类方法
 	 * Get all declared methods on the leaf class and all superclasses.
 	 * Leaf class methods are included first.
 	 * @param leafClass the class to introspect

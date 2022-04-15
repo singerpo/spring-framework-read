@@ -46,6 +46,8 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.util.NestedServletException;
 
 /**
+ * 继承自InvocableHandlerMethod类，
+ * 能够通过已经注册的HandlerMethodReturnValueHandler来处理返回值并且支持设置响应状态以及ResponseStatus注解
  * Extends {@link InvocableHandlerMethod} with the ability to handle return
  * values through a registered {@link HandlerMethodReturnValueHandler} and
  * also supports setting the response status based on a method-level
@@ -65,6 +67,7 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 
 	private static final Method CALLABLE_METHOD = ClassUtils.getMethod(Callable.class, "call");
 
+	// 返回结果处理器组合对象
 	@Nullable
 	private HandlerMethodReturnValueHandlerComposite returnValueHandlers;
 
@@ -103,19 +106,21 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 	public void invokeAndHandle(ServletWebRequest webRequest, ModelAndViewContainer mavContainer,
 			Object... providedArgs) throws Exception {
 
-		// 执行调用
+		// 执行父类的invokeForRequest执行
 		Object returnValue = invokeForRequest(webRequest, mavContainer, providedArgs);
 		// 设置响应状态码
 		setResponseStatus(webRequest);
 
-		// 设置 ModelAndViewContainer 为请求已处理，返回，和@ResponseStatus注解相关
+		// 处理返回值，判断返回值是空
 		if (returnValue == null) {
+			// request的NotModified为true,有@ResponseStatus,RequestHandled为true,三个条件有一个成立，则设置请求处理完成并返回
 			if (isRequestNotModified(webRequest) || getResponseStatus() != null || mavContainer.isRequestHandled()) {
 				disableContentCachingIfNecessary(webRequest);
 				mavContainer.setRequestHandled(true);
 				return;
 			}
 		}
+		// 返回值不为空，@ResponseStatus存在reason，则设置请求处理完成并返回
 		else if (StringUtils.hasText(getResponseStatusReason())) {
 			mavContainer.setRequestHandled(true);
 			return;
@@ -125,7 +130,7 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 		mavContainer.setRequestHandled(false);
 		Assert.state(this.returnValueHandlers != null, "No return value handlers");
 		try {
-			// 处理返回值
+			// 使用returnValueHandlers处理返回值
 			this.returnValueHandlers.handleReturnValue(
 					returnValue, getReturnValueType(returnValue), mavContainer, webRequest);
 		}
@@ -141,18 +146,22 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 	 * Set the response status according to the {@link ResponseStatus} annotation.
 	 */
 	private void setResponseStatus(ServletWebRequest webRequest) throws IOException {
+		// 获取状态码，和@ResponseStatus注解相关
 		HttpStatus status = getResponseStatus();
 		if (status == null) {
 			return;
 		}
 
+		// 设置响应的状态码
 		HttpServletResponse response = webRequest.getResponse();
 		if (response != null) {
 			String reason = getResponseStatusReason();
+			// 有reason则设置status 、reason
 			if (StringUtils.hasText(reason)) {
 				response.sendError(status.value(), reason);
 			}
 			else {
+				// 没有reason,则仅设置status
 				response.setStatus(status.value());
 			}
 		}

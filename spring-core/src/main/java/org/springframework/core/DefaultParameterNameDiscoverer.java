@@ -41,10 +41,14 @@ public class DefaultParameterNameDiscoverer extends PrioritizedParameterNameDisc
 
 	public DefaultParameterNameDiscoverer() {
 		// TODO Remove this conditional inclusion when upgrading to Kotlin 1.5, see https://youtrack.jetbrains.com/issue/KT-44594
+		// 如果项目部署运行在GraalVM环境里且存在kotlin反射
 		if (KotlinDetector.isKotlinReflectPresent() && !NativeDetector.inNativeImage()) {
+			// 添加kotlin的反射工具内省参数名发现器
 			addDiscoverer(new KotlinReflectionParameterNameDiscoverer());
 		}
+		// 添加使用JDK8的反射工具内省参数名（基于-parameters编译器标记）发现器
 		addDiscoverer(new StandardReflectionParameterNameDiscoverer());
+		// 添加基于ASM库对Class文件的解析获取LocalVariableTable信息来发现参数名的参数名发现器
 		addDiscoverer(new LocalVariableTableParameterNameDiscoverer());
 	}
 

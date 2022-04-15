@@ -64,8 +64,12 @@ public class InitBinderDataBinderFactory extends DefaultDataBinderFactory {
 	@Override
 	public void initBinder(WebDataBinder dataBinder, NativeWebRequest request) throws Exception {
 		for (InvocableHandlerMethod binderMethod : this.binderMethods) {
+			// 确定是否应该使用给定的@InitBinder方法初始化给定的WebDataBinder实例
+			// 默认情况下，检查注解值中指定的属性名是否和参数名匹配
 			if (isBinderMethodApplicable(binderMethod, dataBinder)) {
+				// 调用方法进行参数解析
 				Object returnValue = binderMethod.invokeForRequest(request, null, dataBinder);
+				// 标注有@InitBinder注解方法必须返回void
 				if (returnValue != null) {
 					throw new IllegalStateException(
 							"@InitBinder methods must not return a value (should be void): " + binderMethod);
@@ -75,6 +79,7 @@ public class InitBinderDataBinderFactory extends DefaultDataBinderFactory {
 	}
 
 	/**
+	 * 判断指定的方式是否需要进行初始化操作
 	 * Determine whether the given {@code @InitBinder} method should be used
 	 * to initialize the given {@link WebDataBinder} instance. By default we
 	 * check the specified attribute names in the annotation value, if any.

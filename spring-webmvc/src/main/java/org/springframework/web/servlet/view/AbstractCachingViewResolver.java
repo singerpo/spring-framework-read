@@ -170,18 +170,25 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	@Override
 	@Nullable
 	public View resolveViewName(String viewName, Locale locale) throws Exception {
+		// 如果禁用缓存，则创建viewName对应的View对象
 		if (!isCache()) {
 			return createView(viewName, locale);
 		}
 		else {
+			// 获取缓存Key
 			Object cacheKey = getCacheKey(viewName, locale);
+			// 从viewAccessCache缓存中，获取View对象
 			View view = this.viewAccessCache.get(cacheKey);
+			// 如果获取不到缓存，则从viewCreationCache中获取
 			if (view == null) {
 				synchronized (this.viewCreationCache) {
+					// 从viewCreationCache中获取View对象
 					view = this.viewCreationCache.get(cacheKey);
 					if (view == null) {
 						// Ask the subclass to create the View object.
+						// 创建viewName对应的View对象
 						view = createView(viewName, locale);
+						// 如果创建失败，但是cacheUnresolved
 						if (view == null && this.cacheUnresolved) {
 							view = UNRESOLVED_VIEW;
 						}

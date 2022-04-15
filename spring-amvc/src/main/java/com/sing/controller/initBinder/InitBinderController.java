@@ -1,17 +1,16 @@
 package com.sing.controller.initBinder;
 
-import javafx.scene.input.DataFormat;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -54,7 +53,7 @@ public class InitBinderController {
     public ModelAndView getBean(User user, @ModelAttribute("stu") Student stu){
         System.out.println(stu);
         System.out.println(user);
-        String viewName = "initBinder";
+        String viewName = "success";
         ModelAndView modelAndView = new ModelAndView(viewName);
         modelAndView.addObject("user", user);
         modelAndView.addObject("student", stu);

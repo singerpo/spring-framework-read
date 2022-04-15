@@ -327,14 +327,17 @@ public class DispatcherServlet extends FrameworkServlet {
 	@Nullable
 	private List<HandlerExceptionResolver> handlerExceptionResolvers;
 
+	//视图名称转换器
 	/** RequestToViewNameTranslator used by this servlet. */
 	@Nullable
 	private RequestToViewNameTranslator viewNameTranslator;
 
+	// FlashMap管理器，负责重定向保存参数到临时存储（默认session)中
 	/** FlashMapManager used by this servlet. */
 	@Nullable
 	private FlashMapManager flashMapManager;
 
+	// 视图解析器，根据视图名称和语言，获取view视图
 	/** List of ViewResolvers used by this servlet. */
 	@Nullable
 	private List<ViewResolver> viewResolvers;
@@ -509,7 +512,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		// 初始化 HandlerExceptionResolver:基于HandlerExceptionResolver接口的异常处理
 		initHandlerExceptionResolvers(context);
 		// 初始化 RequestToViewNameTranslator:当controller处理器方法没有返回一个View对象或逻辑视图名称，并且在该方法中没有直接
-		// 往response的输出流面写数据的时候，
+		// 往response的输出流面写数据的时候，Spring将会采用约定好的方式提供一个逻辑视图名称
 		initRequestToViewNameTranslator(context);
 		// 初始化 ViewResolver: 将ModelAndView选择合适的视图进行渲染的处理器
 		initViewResolvers(context);
@@ -1081,7 +1084,6 @@ public class DispatcherServlet extends FrameworkServlet {
 			ModelAndView mv = null;
 			// 处理请求过程中抛出的异常，但是不包含渲染过程中抛出的异常
 			Exception dispatchException = null;
-
 			try {
 				// 检测请求是否为上传请求，如果是则通过multipartResolver将其封装成MultipartHttpServletRequest对象
 				processedRequest = checkMultipart(request);
@@ -1228,11 +1230,13 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 		}
 
+		// 如果启动了异步处理则返回
 		if (WebAsyncUtils.getAsyncManager(request).isConcurrentHandlingStarted()) {
 			// Concurrent handling started during a forward
 			return;
 		}
 
+		// 触发Interceptor的afterCompletion
 		if (mappedHandler != null) {
 			// Exception (if any) is already handled..
 			mappedHandler.triggerAfterCompletion(request, response, null);
@@ -1400,7 +1404,9 @@ public class DispatcherServlet extends FrameworkServlet {
 		// Check registered HandlerExceptionResolvers...
 		ModelAndView exMv = null;
 		if (this.handlerExceptionResolvers != null) {
+			// 遍历 HanderExceptionResolvers数组
 			for (HandlerExceptionResolver resolver : this.handlerExceptionResolvers) {
+				// 解析异常，生成ModelAndView对象
 				exMv = resolver.resolveException(request, response, handler, ex);
 				if (exMv != null) {
 					break;
@@ -1443,22 +1449,28 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// Determine locale for request and apply it to the response.
+		// 解析request获取Locale对象，并设置到response中
 		Locale locale =
 				(this.localeResolver != null ? this.localeResolver.resolveLocale(request) : request.getLocale());
 		response.setLocale(locale);
 
+		// 获取View对象
 		View view;
+		// 获取viewName
 		String viewName = mv.getViewName();
 		if (viewName != null) {
 			// We need to resolve the view name.
+			// 使用viewName获得View对象
 			view = resolveViewName(viewName, mv.getModelInternal(), locale, request);
 			if (view == null) {
+				// 获取不到，抛出异常
 				throw new ServletException("Could not resolve view with name '" + mv.getViewName() +
 						"' in servlet with name '" + getServletName() + "'");
 			}
 		}
 		else {
 			// No need to lookup: the ModelAndView object contains the actual View object.
+			// 直接使用 ModelAndView 对象的View 对象
 			view = mv.getView();
 			if (view == null) {
 				throw new ServletException("ModelAndView [" + mv + "] neither contains a view name nor a " +
@@ -1514,8 +1526,11 @@ public class DispatcherServlet extends FrameworkServlet {
 			Locale locale, HttpServletRequest request) throws Exception {
 
 		if (this.viewResolvers != null) {
+			// 遍历ViewResolver数组
 			for (ViewResolver viewResolver : this.viewResolvers) {
+				// 根据viewName + locale 参数，解析出View对象
 				View view = viewResolver.resolveViewName(viewName, locale);
+				// 解析成功，直接返回View对象
 				if (view != null) {
 					return view;
 				}

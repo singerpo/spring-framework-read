@@ -5,15 +5,15 @@ public class Student {
     private String name;
     private int age;
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public int getAge() {
+	public int getAge() {
         return age;
     }
 
@@ -23,7 +23,7 @@ public class Student {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "Student{" +
                 "name='" + name + '\'' +
                 ", age=" + age +
                 '}';

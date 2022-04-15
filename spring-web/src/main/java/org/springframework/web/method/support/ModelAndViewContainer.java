@@ -29,6 +29,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.bind.support.SimpleSessionStatus;
 
 /**
+ * 在控制器的调用过程中，记录视图和model信息
  * Records model and view related decisions made by
  * {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers} and
  * {@link HandlerMethodReturnValueHandler HandlerMethodReturnValueHandlers} during the course of invocation of
@@ -49,18 +50,24 @@ import org.springframework.web.bind.support.SimpleSessionStatus;
  */
 public class ModelAndViewContainer {
 
+	// 如果为true则在处理器返回redirect视图时一定不适用defaultModel
 	private boolean ignoreDefaultModelOnRedirect = false;
 
+	// 视图对象，Object类型，可以是实际视图，也可以是String类型的逻辑视图
 	@Nullable
 	private Object view;
 
+	// 默认使用的model对象
 	private final ModelMap defaultModel = new BindingAwareModelMap();
 
+	// redirect类型的model
 	@Nullable
 	private ModelMap redirectModel;
 
+	// 处理器返回redirect视图的标志
 	private boolean redirectModelScenario = false;
 
+	// 用于设置sessionAttribute使用完的标志
 	@Nullable
 	private HttpStatus status;
 
@@ -70,6 +77,7 @@ public class ModelAndViewContainer {
 
 	private final SessionStatus sessionStatus = new SimpleSessionStatus();
 
+	// 请求是否已经处理完的标识
 	private boolean requestHandled = false;
 
 

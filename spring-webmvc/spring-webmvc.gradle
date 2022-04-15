@@ -71,4 +71,5 @@ dependencies {
 	testRuntime("com.sun.xml.bind:jaxb-core")
 	testRuntime("com.sun.xml.bind:jaxb-impl")
 	testRuntime("com.sun.activation:javax.activation")
+	testRuntime("org.assertj:assertj-core:3.10.0")
 }
