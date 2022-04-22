@@ -2,7 +2,7 @@ package com.face.singleton;
 
 /**
  * 饿汉式
- * 简单实用，推荐实用
+ * 简单实用，推荐使用用
  * 唯一缺点：不管用到与否，类装载时就完成实例化
  */
 public class Mgr01 {
