@@ -1,6 +1,9 @@
 package com.face.know;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * JDK新特性
  */
@@ -46,12 +49,19 @@ public class JdkFeature {
 	 * 		-count计数
 	 * 		-reduce规约
 	 * 七. Map 提供了一些新的有用的方法来处理一些日常任务
-	 * putIfAbsent  如果不存在时进行存储，但返回null
-	 * computeIfAbsent   如果不存在时进行存储，返回存储的值
-	 * computeIfPresent
+	 * putIfAbsent  如果不存在时进行存储，返回null;如果存在时不进行存储，返回存在的值
+	 * computeIfAbsent   如果不存在时进行存储，返回存储的值;如果存在时不进行存储，返回存在的值
+	 * computeIfPresent  如果不存在时不进行存储，返回null;如果存在进行存储，返回存储的值
+	 * compute
+	 * merge
 	 * getOrDefault
 	 *
 	 *
 	 *
 	 */
+	public static void main(String[] args) {
+		Map<String,Object> map = new HashMap<>();
+		// map.put("11","11");
+		System.out.println(map.computeIfPresent("11",(key,value) -> "22"));
+	}
 }
